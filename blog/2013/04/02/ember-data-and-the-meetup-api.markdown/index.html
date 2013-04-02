@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>mrloop</title>
+  <title>Ember Data and the Meetup API - mrloop</title>
   <meta name="author" content="mrloop">
 
   
-  <meta name="description" content="I&#8217;m a member of the highland web group and they were looking for somebody to
-create a website for the group. Alisdair and myself were &hellip;">
+  <meta name="description" content="I'm a member of the highland web group and they were looking for somebody to
+create a website for the group. Alisdair and myself were interested in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ create a website for the group. Alisdair and myself were &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.mrloop.com">
+  <link rel="canonical" href="http://blog.mrloop.com/blog/2013/04/02/ember-data-and-the-meetup-api.markdown">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="mrloop" type="application/atom+xml">
@@ -76,15 +76,12 @@ create a website for the group. Alisdair and myself were &hellip;">
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/04/02/ember-data-and-the-meetup-api.markdown/">Ember Data and the Meetup API</a></h1>
+      <h1 class="entry-title">Ember Data and the Meetup API</h1>
     
     
       <p class="meta">
@@ -107,9 +104,9 @@ create a website for the group. Alisdair and myself were &hellip;">
   </header>
 
 
-  <div class="entry-content">I&#8217;m a member of the highland web group and they were looking for somebody to
+<div class="entry-content">I'm a member of the highland web group and they were looking for somebody to
 create a website for the group. Alisdair and myself were interested in doing
-so. The group&#8217;s organized via [meetup.com](http://www.meetup.com/Highland-Web-Group/) and they have
+so. The group's organized via [meetup.com](http://www.meetup.com/Highland-Web-Group/) and they have
 a fairly comprehensive [API](http://www.meetup.com/meetup_api/) for accessing
 their data. The Meetup data should always be up to date so instead of burdening
 somebody with the task of updating meetup with current information and our own
@@ -123,9 +120,9 @@ Ember and Ember Data believe in convention over configuration, the framework wil
 This can make things a little tricky if you step away from those conventions.
 
 The meetup API is not 100% consistent in how it defines object ids e.g. [RSVPs](#rsvps)
-have their ids declared as &#8216;rsvp_id&#8217; whilst most other models simply use &#8216;id&#8217;.
-The RSVPs also use a &#8216;-1&#8217; id as a flag indicating the RSVP is a recurring rsvp
-from the events organizer. Also nested objects aren&#8217;t consistent or always
+have their ids declared as 'rsvp_id' whilst most other models simply use 'id'.
+The RSVPs also use a '-1' id as a flag indicating the RSVP is a recurring rsvp
+from the events organizer. Also nested objects aren't consistent or always
 complete e.g. [Groups](#groups).
 
 The inconsistent JSON structure returned by the Meetup API make it difficult to write an ember data adapter for it.
@@ -133,19 +130,19 @@ Luckily ember data have recently addressed this issue with the [Basic Adapter](h
 letting you write a sync object for specific models in your API so you can work around the inconsistencies.
 
 Sync Object
-&#8212;&#8212;&#8212;&#8211;
+-----------
 
 I define a function *meetupSync* which returns a generic sync object.
 
-&#8220;` js MeetupAdapter.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/MeetupAdapter.js
+``` js MeetupAdapter.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/MeetupAdapter.js
 App.meetupSync = function(type){
   sync = {
     munge: function(json){json},
     findHasManyQueryOptions: {},
-    base_url:&#8221;https://api.meetup.com/2&#8221;,
+    base_url:"https://api.meetup.com/2",
     find: function(id, process){
       q = {};
-      q[this.type+&#8221;_id&#8221;] = id;
+      q[this.type+"_id"] = id;
       _munge = this.munge;
       this._query(q, function(result){
         process(result.results.length > 0 ? result.results[0]  : [])
@@ -164,19 +161,19 @@ App.meetupSync = function(type){
     findHasMany: function(record, options, processor){
       relationship_model = record.constructor.typeForRelationship(options.relationship)
       q = {};
-      q[record.constructor.sync.type+&#8221;_id&#8221;] = record.id;
+      q[record.constructor.sync.type+"_id"] = record.id;
       relationship_model.sync.query(Ember.$.extend({},q, this.findHasManyQueryOptions), processor)
     },
     _query: _.rateLimit(function(query, processResult){
-      Ember.assert(&#8220;Must specify type&#8221;, this.type);
-      App.ajax(this.base_url+&#8221;/&#8221;+this.type+&#8221;s&#8221;, &#8220;GET&#8221;, {data: query}).then(processResult);
+      Ember.assert("Must specify type", this.type);
+      App.ajax(this.base_url+"/"+this.type+"s", "GET", {data: query}).then(processResult);
     }, 100),
   }
   sync_copy = Ember.$.extend(true, {}, sync)
   sync_copy.type = type;
   return sync_copy;
 }
-&#8220;`
+```
 
 This is a generalized sync object for the meetup API that I can customise for each model
 as needed. I define 3 functions for finding records from the API.
@@ -186,192 +183,192 @@ as needed. I define 3 functions for finding records from the API.
   * *findHasMany* for finding related records. 
 
 In my implementation *find* and *findHasMany* both use *query* to find records. 
-The *query* function takes 2 arguments, &#8216;query&#8217; e.g. 
-&#8220;` js
-{ status: &#8216;upcoming&#8217; } 
-&#8220;`
-and a a function &#8216;process&#8217; with we use to load the JSON from our request into the Data Store after we have done our own
+The *query* function takes 2 arguments, 'query' e.g. 
+``` js
+{ status: 'upcoming' } 
+```
+and a a function 'process' with we use to load the JSON from our request into the Data Store after we have done our own
 processing with our *munge* function. The query function uses our private
 function *_query* which is [rate limited](https://gist.github.com/mattheworiordan/1084831) to stop meetup API restricting access
 for too frequent API calls.
 
 Models
-&#8212;&#8212;
+------
 
 ### Event Models
 
-&#8220;` js event.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js
+``` js event.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js
 var attr = DS.attr;
 
 App.Event = DS.Model.extend({
 
-  rsvps: DS.hasMany(&#8216;App.Rsvp&#8217;),
-  photos: DS.hasMany(&#8216;App.Photo&#8217;),
+  rsvps: DS.hasMany('App.Rsvp'),
+  photos: DS.hasMany('App.Photo'),
 
-  group: DS.belongsTo(&#8216;App.Group&#8217;),
+  group: DS.belongsTo('App.Group'),
 
   attending_rsvps: function(){
     return Ember.ArrayController.create({
-      content: this.get(&#8216;rsvps&#8217;).filterProperty(&#8216;response&#8217;,&#8217;yes&#8217;)
+      content: this.get('rsvps').filterProperty('response','yes')
     });
-  }.property(&#8216;rsvps.@each&#8217;),
+  }.property('rsvps.@each'),
 
-  event_url: attr(&#8216;string&#8217;),
-  status: attr(&#8216;string&#8217;),
-  name: attr(&#8216;string&#8217;),
-  time: attr(&#8216;date&#8217;),
-  description: attr(&#8216;string&#8217;),
-  how_to_find_us: attr(&#8216;string&#8217;),
-  venue: attr(&#8216;object&#8217;)
+  event_url: attr('string'),
+  status: attr('string'),
+  name: attr('string'),
+  time: attr('date'),
+  description: attr('string'),
+  how_to_find_us: attr('string'),
+  venue: attr('object')
 })
-&#8220;`
+```
 
 The Event model is defined then its sync object is initialised.
 
-&#8220;` js
-App.Event.sync = App.meetupSync(&#8216;event&#8217;);
-&#8220;`
+``` js
+App.Event.sync = App.meetupSync('event');
+```
 
 The meetup API return an events data including the events group as a nested object but without
 all the information we want to load a App.Group object into the data store.
 <a id='groups'></a>
-&#8220;` json events.json http://www.meetup.com/meetup_api/console/?path=/2/events
+``` json events.json http://www.meetup.com/meetup_api/console/?path=/2/events
 
 {
-  &#8220;results&#8221;: [
+  "results": [
   {
-    &#8220;status&#8221;: &#8220;upcoming&#8221;,
-      &#8220;visibility&#8221;: &#8220;public&#8221;,
-      &#8220;maybe_rsvp_count&#8221;: 0,
-      &#8220;venue&#8221;: {
-        &#8220;id&#8221;: 6200762,
-        &#8220;lon&#8221;: -4.2325,
-        &#8220;repinned&#8221;: false,
-        &#8220;name&#8221;: &#8220;Eden Court&#8221;,
-        &#8220;address_1&#8221;: &#8220;Bishops Road&#8221;,
-        &#8220;lat&#8221;: 57.472176,
-        &#8220;country&#8221;: &#8220;gb&#8221;,
-        &#8220;city&#8221;: &#8220;Inverness&#8221;
+    "status": "upcoming",
+      "visibility": "public",
+      "maybe_rsvp_count": 0,
+      "venue": {
+        "id": 6200762,
+        "lon": -4.2325,
+        "repinned": false,
+        "name": "Eden Court",
+        "address_1": "Bishops Road",
+        "lat": 57.472176,
+        "country": "gb",
+        "city": "Inverness"
       },
-      &#8220;id&#8221;: &#8220;ghnjqyrgbvb&#8221;,
-      &#8220;utc_offset&#8221;: 3600000,
-      &#8220;time&#8221;: 1366135200000,
-      &#8220;waitlist_count&#8221;: 0,
-      &#8220;updated&#8221;: 1331810527000,
-      &#8220;yes_rsvp_count&#8221;: 2,
-      &#8220;created&#8221;: 1296155663000,
-      &#8220;event_url&#8221;: &#8220;http://www.meetup.com/Highland-Web-Group/events/111106332/&#8221;,
-      &#8220;description&#8221;: &#8221;<p>An informal and friendly setting for chat about all types of web-related stuff. All welcome.</p>&#8221;,
-      &#8220;how_to_find_us&#8221;: &#8220;Meet in the Tulloch Room. Ask at reception if you&#8217;re unsure how to find it.&#8221;,
-      &#8220;name&#8221;: &#8220;The Highland Web Group Monthly Meetup&#8221;,
-      &#8220;headcount&#8221;: 0,
-      &#8220;group&#8221;: {
-        &#8220;id&#8221;: 1744559,
-        &#8220;group_lat&#8221;: 57.47999954223633,
-        &#8220;name&#8221;: &#8220;Highland Web Group&#8221;,
-        &#8220;group_lon&#8221;: -4.230000019073486,
-        &#8220;join_mode&#8221;: &#8220;open&#8221;,
-        &#8220;urlname&#8221;: &#8220;Highland-Web-Group&#8221;,
-        &#8220;who&#8221;: &#8220;Members&#8221;
+      "id": "ghnjqyrgbvb",
+      "utc_offset": 3600000,
+      "time": 1366135200000,
+      "waitlist_count": 0,
+      "updated": 1331810527000,
+      "yes_rsvp_count": 2,
+      "created": 1296155663000,
+      "event_url": "http://www.meetup.com/Highland-Web-Group/events/111106332/",
+      "description": "<p>An informal and friendly setting for chat about all types of web-related stuff. All welcome.</p>",
+      "how_to_find_us": "Meet in the Tulloch Room. Ask at reception if you're unsure how to find it.",
+      "name": "The Highland Web Group Monthly Meetup",
+      "headcount": 0,
+      "group": {
+        "id": 1744559,
+        "group_lat": 57.47999954223633,
+        "name": "Highland Web Group",
+        "group_lon": -4.230000019073486,
+        "join_mode": "open",
+        "urlname": "Highland-Web-Group",
+        "who": "Members"
       }
   }]
 }
-&#8220;`
+```
 A custom *munge* function is defined for handling results returned from the
 API. 
-&#8220;` js event.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js
+``` js event.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js
 App.Event.sync.munge = function(json){
   if(json.group && json.group.id){
     json.group_id = json.group.id;
     json.group = null;
   }
 }
-&#8220;`
+```
 
 The group id is extracted from the nested object and set the group_id key on the
 top level event object so ember data properly handles the belongsTo
 relationship. The last thing to do is set the JSON group object to null so
-ember data doesn&#8217;t try and materialise a App.Group from this record.
+ember data doesn't try and materialise a App.Group from this record.
 
 ### <a id="rsvps"></a>Rsvp Model
 
 The data returned for an rsvp is structure slightly differently to that of an Event.
 
-&#8220;` json rsvps.json http://www.meetup.com/meetup_api/console/?path=/2/rsvps
+``` json rsvps.json http://www.meetup.com/meetup_api/console/?path=/2/rsvps
 {
-  &#8220;results&#8221;: [
+  "results": [
   {
-    &#8220;response&#8221;: &#8220;yes&#8221;,
-      &#8220;member&#8221;: {
-        &#8220;name&#8221;: &#8220;Blair Millen&#8221;,
-        &#8220;member_id&#8221;: 8357569
+    "response": "yes",
+      "member": {
+        "name": "Blair Millen",
+        "member_id": 8357569
       },
-      &#8220;member_photo&#8221;: {
-        &#8220;photo_link&#8221;: &#8220;http://photos2.meetupstatic.com/photos/member/3/b/e/f/member_5175343.jpeg&#8221;,
-        &#8220;highres_link&#8221;: &#8220;http://photos2.meetupstatic.com/photos/member/3/b/e/f/highres_5175343.jpeg&#8221;,
-        &#8220;thumb_link&#8221;: &#8220;http://photos2.meetupstatic.com/photos/member/3/b/e/f/thumb_5175343.jpeg&#8221;,
-        &#8220;photo_id&#8221;: 5175343
+      "member_photo": {
+        "photo_link": "http://photos2.meetupstatic.com/photos/member/3/b/e/f/member_5175343.jpeg",
+        "highres_link": "http://photos2.meetupstatic.com/photos/member/3/b/e/f/highres_5175343.jpeg",
+        "thumb_link": "http://photos2.meetupstatic.com/photos/member/3/b/e/f/thumb_5175343.jpeg",
+        "photo_id": 5175343
       },
-      &#8220;created&#8221;: 1364297767000,
-      &#8220;event&#8221;: {
-        &#8220;id&#8221;: &#8220;ghnjqyrgbvb&#8221;,
-        &#8220;time&#8221;: 1366135200000,
-        &#8220;event_url&#8221;: &#8220;http://www.meetup.com/Highland-Web-Group/events/111106332/&#8221;,
-        &#8220;name&#8221;: &#8220;The Highland Web Group Monthly Meetup&#8221;
+      "created": 1364297767000,
+      "event": {
+        "id": "ghnjqyrgbvb",
+        "time": 1366135200000,
+        "event_url": "http://www.meetup.com/Highland-Web-Group/events/111106332/",
+        "name": "The Highland Web Group Monthly Meetup"
       },
-      &#8220;mtime&#8221;: 1364297767000,
-      &#8220;guests&#8221;: 0,
-      &#8220;rsvp_id&#8221;: 741139992,
-      &#8220;venue&#8221;: {
-        &#8220;id&#8221;: 6200762,
-        &#8220;lon&#8221;: -4.2325,
-        &#8220;repinned&#8221;: false,
-        &#8220;name&#8221;: &#8220;Eden Court&#8221;,
-        &#8220;address_1&#8221;: &#8220;Bishops Road&#8221;,
-        &#8220;lat&#8221;: 57.472176,
-        &#8220;country&#8221;: &#8220;gb&#8221;,
-        &#8220;city&#8221;: &#8220;Inverness&#8221;
+      "mtime": 1364297767000,
+      "guests": 0,
+      "rsvp_id": 741139992,
+      "venue": {
+        "id": 6200762,
+        "lon": -4.2325,
+        "repinned": false,
+        "name": "Eden Court",
+        "address_1": "Bishops Road",
+        "lat": 57.472176,
+        "country": "gb",
+        "city": "Inverness"
       },
-      &#8220;group&#8221;: {
-        &#8220;id&#8221;: 1744559,
-        &#8220;group_lat&#8221;: 57.47999954223633,
-        &#8220;group_lon&#8221;: -4.230000019073486,
-        &#8220;join_mode&#8221;: &#8220;open&#8221;,
-        &#8220;urlname&#8221;: &#8220;Highland-Web-Group&#8221;
+      "group": {
+        "id": 1744559,
+        "group_lat": 57.47999954223633,
+        "group_lon": -4.230000019073486,
+        "join_mode": "open",
+        "urlname": "Highland-Web-Group"
       }
   }]
 }
-&#8220;`
+```
 
 The Rsvp model looks like this.
 
-&#8220;` js rsvp.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js
+``` js rsvp.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js
 var attr = DS.attr;
 
 App.Rsvp = DS.Model.extend({
 
-  event: DS.belongsTo(&#8216;App.Event&#8217;),
+  event: DS.belongsTo('App.Event'),
   memberLink: function(){
-    return &#8220;http://www.meetup.com/members/&#8221;+this.get(&#8216;member.member_id&#8217;);
-  }.property(&#8216;member&#8217;),
-  comments: attr(&#8216;string&#8217;),
-  created: attr(&#8216;date&#8217;),
-  member: attr(&#8216;object&#8217;),
-  member_photo: attr(&#8216;object&#8217;),
-  response: attr(&#8216;string&#8217;),
+    return "http://www.meetup.com/members/"+this.get('member.member_id');
+  }.property('member'),
+  comments: attr('string'),
+  created: attr('date'),
+  member: attr('object'),
+  member_photo: attr('object'),
+  response: attr('string'),
 
 })
 
-App.Rsvp.sync = App.meetupSync(&#8216;rsvp&#8217;);
-&#8220;`
+App.Rsvp.sync = App.meetupSync('rsvp');
+```
 
 The Rsvp models munge function does a little more work. 
 
-&#8220;` js rsvp.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js
+``` js rsvp.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js
 App.Rsvp.sync.munge = function(json){
   if(json.rsvp_id && json.rsvp_id == -1){
     //ember-data wont accept -1 id
-    json.id = &#8220;RecurringOrganizersRsvpId&#8221;;
+    json.id = "RecurringOrganizersRsvpId";
   }else{
     json.id = json.rsvp_id;
   }
@@ -382,19 +379,19 @@ App.Rsvp.sync.munge = function(json){
 
   return json;
 }
-&#8220;`
+```
 
-The rsvp data returned by the API uses &#8216;rsvp_id&#8217; instead of &#8216;id&#8217; for the object id and it also sets the rsvp_id to -1 if it a repeating event that hasn&#8217;t been rsvp&#8217;d by anybody but the host. ember-data doesn&#8217;t handle -1 id so we set this to something else or if an ordinary id is returned we change the key from rsvp_id to id. 
+The rsvp data returned by the API uses 'rsvp_id' instead of 'id' for the object id and it also sets the rsvp_id to -1 if it a repeating event that hasn't been rsvp'd by anybody but the host. ember-data doesn't handle -1 id so we set this to something else or if an ordinary id is returned we change the key from rsvp_id to id. 
 
-As with the Event result data the Rsvp result data contains a nested object. In this case it&#8217;s the data for the event the rsvp belongs to. We extract the events id and set the JSON Event object to null.
+As with the Event result data the Rsvp result data contains a nested object. In this case it's the data for the event the rsvp belongs to. We extract the events id and set the JSON Event object to null.
 
 Security
-&#8212;&#8212;&#8211;
+--------
 
 [JSONP](http://www.json-p.org) or [CORS](http://www.w3.org/wiki/CORS) can be used to make requests from different domains to the Meetup
-API. The Meetup CORS requires OAuth authentication but we don&#8217;t want to require
+API. The Meetup CORS requires OAuth authentication but we don't want to require
 website visitors signing in to view publicly available information. JSONP on
-the other hand requires an API key and because we&#8217;re building a javascript app
+the other hand requires an API key and because we're building a javascript app
 this API key will be viewable by anybody if they look at the javascript files.
 Ideally Meetup API key authentication could be tied to a specific domain that
 can only be specified via their web dashboard so me as the owner of the key
@@ -402,18 +399,65 @@ could specify that it should only work for [highlandwebgroup.github.com](http://
 
 
 </div>
+
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">mrloop</span></span>
+
+      
+
+
+
+
+
+
+
+
   
 
 
-    </article>
+<time datetime="2013-04-02T15:45:00+01:00" pubdate data-updated="true">Apr 2<span>nd</span>, 2013</time>
+      
+
+<span class="categories">
   
-  <div class="pagination">
+    <a class='category' href='/blog/categories/ember/'>Ember</a>, <a class='category' href='/blog/categories/ember-data/'>Ember Data</a>, <a class='category' href='/blog/categories/javascript/'>Javascript</a>
+  
+</span>
+
+
+    </p>
     
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.mrloop.com/blog/2013/04/02/ember-data-and-the-meetup-api.markdown/" data-via="mrloop" data-counturl="http://blog.mrloop.com/blog/2013/04/02/ember-data-and-the-meetup-api.markdown/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
 </div>
+
+    
+    <p class="meta">
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -430,7 +474,7 @@ could specify that it should only work for [highlandwebgroup.github.com](http://
 <section>
   <h1>Coderwall</h1>
   <ul id="cw_badges">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
 
   <script type="text/javascript">
@@ -495,7 +539,7 @@ could specify that it should only work for [highlandwebgroup.github.com](http://
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/mrloop">@mrloop</a> on GitHub
@@ -537,6 +581,7 @@ could specify that it should only work for [highlandwebgroup.github.com](http://
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -551,7 +596,10 @@ could specify that it should only work for [highlandwebgroup.github.com](http://
       var disqus_shortname = 'mrloop';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.mrloop.com/blog/2013/04/02/ember-data-and-the-meetup-api.markdown/';
+        var disqus_url = 'http://blog.mrloop.com/blog/2013/04/02/ember-data-and-the-meetup-api.markdown/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

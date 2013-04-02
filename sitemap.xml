@@ -1,15 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
-        <loc>http://mrloop.github.com/blog/archives/</loc>
-        <lastmod>2013-04-01T14:04:06+01:00</lastmod>
+        <loc>http://blog.mrloop.com/blog/2013/04/02/ember-data-and-the-meetup-api.markdown/</loc>
+        <lastmod>2013-04-02T13:10:27+01:00</lastmod>
     </url>
     <url>
-        <loc>http://mrloop.github.com/</loc>
-        <lastmod>2013-04-01T14:04:06+01:00</lastmod>
+        <loc>http://blog.mrloop.com/blog/archives/</loc>
+        <lastmod>2013-04-02T13:10:27+01:00</lastmod>
     </url>
     <url>
-        <loc>http://mrloop.github.com/robots.txt</loc>
-        <lastmod>2013-04-01T14:04:06+01:00</lastmod>
+        <loc>http://blog.mrloop.com/</loc>
+        <lastmod>2013-04-02T13:10:27+01:00</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.mrloop.com/robots.txt</loc>
+        <lastmod>2013-04-01T15:43:37+01:00</lastmod>
     </url>
 </urlset>
