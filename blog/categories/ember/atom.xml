@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ember | mrloop]]></title>
   <link href="http://blog.mrloop.com/blog/categories/ember/atom.xml" rel="self"/>
   <link href="http://blog.mrloop.com/"/>
-  <updated>2013-04-02T14:28:36+01:00</updated>
+  <updated>2013-04-07T16:15:27+01:00</updated>
   <id>http://blog.mrloop.com/</id>
   <author>
     <name><![CDATA[mrloop]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Ember Data and the Meetup API]]></title>
-    <link href="http://blog.mrloop.com/blog/2013/04/02/ember-data-and-the-meetup-api/"/>
-    <updated>2013-04-02T15:45:00+01:00</updated>
-    <id>http://blog.mrloop.com/blog/2013/04/02/ember-data-and-the-meetup-api</id>
+    <link href="http://blog.mrloop.com/blog/2013/04/07/ember-data-and-the-meetup-api/"/>
+    <updated>2013-04-07T15:45:00+01:00</updated>
+    <id>http://blog.mrloop.com/blog/2013/04/07/ember-data-and-the-meetup-api</id>
     <content type="html"><![CDATA[<p>I'm a member of the highland web group and they were looking for somebody to
 create a website for the group. Alisdair and myself were interested in doing
 so. The group's organized via <a href="http://www.meetup.com/Highland-Web-Group/">meetup.com</a> and they have
