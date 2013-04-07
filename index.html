@@ -9,7 +9,8 @@
   <meta name="author" content="mrloop">
 
   
-  <meta name="description" content="Blog Archives Recent Posts Coderwall Status updating&#8230; var coderwall = (function(){ function render(options, badges){ var fragment = '', t = $( &hellip;">
+  <meta name="description" content="I&#8217;m a member of the highland web group and they were looking for somebody to
+create a website for the group. Alisdair and myself were &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +79,519 @@
       <div class="blog-index">
   
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/02/ember-data-and-the-meetup-api/">Ember Data and the Meetup API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-02T15:45:00+01:00" pubdate data-updated="true">Apr 2<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#8217;m a member of the highland web group and they were looking for somebody to
+create a website for the group. Alisdair and myself were interested in doing
+so. The group&#8217;s organized via <a href="http://www.meetup.com/Highland-Web-Group/">meetup.com</a> and they have
+a fairly comprehensive <a href="http://www.meetup.com/meetup_api/">API</a> for accessing
+their data. The Meetup data should always be up to date so instead of burdening
+somebody with the task of updating meetup with current information and our own
+website with an alternative CMS the best option was to populate
+the <a href="http://highlandwebgroup.github.com">highlandweb group</a> with meet up data dynamically.
+To do this I decided to use <a href="http://emberjs.com">Ember</a> and <a href="http://emberjs.com/guides/models/">Ember Data</a>.</p>
+
+<p>Ember is a MVC javascript framework for creating web applications, Ember Data is a data persistence framework for Ember.
+Ember Data provides a central Data Store and Adapters to talk to different data sources.
+Ember and Ember Data believe in convention over configuration, the framework will do a lot of work for you if you follow the conventions.
+This can make things a little tricky if you step away from those conventions.</p>
+
+<p>The meetup API is not 100% consistent in how it defines object ids e.g. <a href="#rsvps">RSVPs</a>
+have their ids declared as &#8216;rsvp_id&#8217; whilst most other models simply use &#8216;id&#8217;.
+The RSVPs also use a &#8216;-1&#8217; id as a flag indicating the RSVP is a recurring rsvp
+from the events organizer. Also nested objects aren&#8217;t consistent or always
+complete e.g. <a href="#groups">Groups</a>.</p>
+
+<p>The inconsistent JSON structure returned by the Meetup API make it difficult to write an ember data adapter for it.
+Luckily ember data have recently addressed this issue with the <a href="http://emberjs.com/blog/2013/03/22/stabilizing-ember-data.html">Basic Adapter</a>
+letting you write a sync object for specific models in your API so you can work around the inconsistencies.</p>
+
+<h2>Sync Object</h2>
+
+<p>I define a function <em>meetupSync</em> which returns a generic sync object.</p>
+
+<figure class='code'><figcaption><span>MeetupAdapter.js</span><a href='https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/MeetupAdapter.js'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">App</span><span class="p">.</span><span class="nx">meetupSync</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">type</span><span class="p">){</span>
+</span><span class='line'>  <span class="nx">sync</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">munge</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">json</span><span class="p">){</span><span class="nx">json</span><span class="p">},</span>
+</span><span class='line'>    <span class="nx">findHasManyQueryOptions</span><span class="o">:</span> <span class="p">{},</span>
+</span><span class='line'>    <span class="nx">base_url</span><span class="o">:</span><span class="s2">&quot;https://api.meetup.com/2&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">find</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">process</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">q</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>      <span class="nx">q</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">type</span><span class="o">+</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">id</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">_munge</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">munge</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">_query</span><span class="p">(</span><span class="nx">q</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">){</span>
+</span><span class='line'>        <span class="nx">process</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">results</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">?</span> <span class="nx">result</span><span class="p">.</span><span class="nx">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="o">:</span> <span class="p">[])</span>
+</span><span class='line'>          <span class="p">.</span><span class="nx">munge</span><span class="p">(</span><span class="nx">_munge</span><span class="p">)</span>
+</span><span class='line'>          <span class="p">.</span><span class="nx">load</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">query</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">process</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">_munge</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">munge</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">_query</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">){</span>
+</span><span class='line'>        <span class="nx">process</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">results</span> <span class="o">||</span> <span class="p">[])</span>
+</span><span class='line'>          <span class="p">.</span><span class="nx">munge</span><span class="p">(</span><span class="nx">_munge</span><span class="p">)</span>
+</span><span class='line'>          <span class="p">.</span><span class="nx">load</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">})</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">findHasMany</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">record</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">processor</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">relationship_model</span> <span class="o">=</span> <span class="nx">record</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">typeForRelationship</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">relationship</span><span class="p">)</span>
+</span><span class='line'>      <span class="nx">q</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>      <span class="nx">q</span><span class="p">[</span><span class="nx">record</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">type</span><span class="o">+</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">record</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">relationship_model</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">Ember</span><span class="p">.</span><span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span><span class="nx">q</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">findHasManyQueryOptions</span><span class="p">),</span> <span class="nx">processor</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">_query</span><span class="o">:</span> <span class="nx">_</span><span class="p">.</span><span class="nx">rateLimit</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">processResult</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">Ember</span><span class="p">.</span><span class="nx">assert</span><span class="p">(</span><span class="s2">&quot;Must specify type&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">type</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">App</span><span class="p">.</span><span class="nx">ajax</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">base_url</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">type</span><span class="o">+</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="p">{</span><span class="nx">data</span><span class="o">:</span> <span class="nx">query</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">processResult</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">},</span> <span class="mi">100</span><span class="p">),</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nx">sync_copy</span> <span class="o">=</span> <span class="nx">Ember</span><span class="p">.</span><span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="p">{},</span> <span class="nx">sync</span><span class="p">)</span>
+</span><span class='line'>  <span class="nx">sync_copy</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="nx">type</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">sync_copy</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is a generalized sync object for the meetup API that I can customise for each model
+as needed. I define 3 functions for finding records from the API.</p>
+
+<ul>
+<li><em>find</em> for finding records by Id</li>
+<li><em>query</em> for finding records by other parameters</li>
+<li><em>findHasMany</em> for finding related records.</li>
+</ul>
+
+
+<p>In my implementation <em>find</em> and <em>findHasMany</em> both use <em>query</em> to find records.
+The <em>query</em> function takes 2 arguments, &#8216;query&#8217; e.g.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="s1">&#39;upcoming&#39;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and a a function &#8216;process&#8217; with we use to load the JSON from our request into the Data Store after we have done our own
+processing with our <em>munge</em> function. The query function uses our private
+function <em>_query</em> which is <a href="https://gist.github.com/mattheworiordan/1084831">rate limited</a> to stop meetup API restricting access
+for too frequent API calls.</p>
+
+<h2>Models</h2>
+
+<h3>Event Models</h3>
+
+<figure class='code'><figcaption><span>event.js</span><a href='https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">attr</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">App</span><span class="p">.</span><span class="nx">Event</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">rsvps</span><span class="o">:</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">hasMany</span><span class="p">(</span><span class="s1">&#39;App.Rsvp&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">photos</span><span class="o">:</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">hasMany</span><span class="p">(</span><span class="s1">&#39;App.Photo&#39;</span><span class="p">),</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">group</span><span class="o">:</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">belongsTo</span><span class="p">(</span><span class="s1">&#39;App.Group&#39;</span><span class="p">),</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">attending_rsvps</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">Ember</span><span class="p">.</span><span class="nx">ArrayController</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">content</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;rsvps&#39;</span><span class="p">).</span><span class="nx">filterProperty</span><span class="p">(</span><span class="s1">&#39;response&#39;</span><span class="p">,</span><span class="s1">&#39;yes&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">}.</span><span class="nx">property</span><span class="p">(</span><span class="s1">&#39;rsvps.@each&#39;</span><span class="p">),</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">event_url</span><span class="o">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">status</span><span class="o">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">name</span><span class="o">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">time</span><span class="o">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">description</span><span class="o">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">how_to_find_us</span><span class="o">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">venue</span><span class="o">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;object&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The Event model is defined then its sync object is initialised.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">App</span><span class="p">.</span><span class="nx">Event</span><span class="p">.</span><span class="nx">sync</span> <span class="o">=</span> <span class="nx">App</span><span class="p">.</span><span class="nx">meetupSync</span><span class="p">(</span><span class="s1">&#39;event&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The meetup API return an events data including the events group as a nested object but without
+all the information we want to load a App.Group object into the data store.
+<a id='groups'></a></p>
+
+<figure class='code'><figcaption><span>events.json</span><a href='http://www.meetup.com/meetup_api/console/?path=/2/events'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;upcoming&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;visibility&quot;</span><span class="p">:</span> <span class="s2">&quot;public&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;maybe_rsvp_count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;venue&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">6200762</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">-4.2325</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;repinned&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Eden Court&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;address_1&quot;</span><span class="p">:</span> <span class="s2">&quot;Bishops Road&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">57.472176</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;country&quot;</span><span class="p">:</span> <span class="s2">&quot;gb&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;city&quot;</span><span class="p">:</span> <span class="s2">&quot;Inverness&quot;</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;ghnjqyrgbvb&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;utc_offset&quot;</span><span class="p">:</span> <span class="mi">3600000</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;time&quot;</span><span class="p">:</span> <span class="mi">1366135200000</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;waitlist_count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;updated&quot;</span><span class="p">:</span> <span class="mi">1331810527000</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;yes_rsvp_count&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;created&quot;</span><span class="p">:</span> <span class="mi">1296155663000</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;event_url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.meetup.com/Highland-Web-Group/events/111106332/&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;p&gt;An informal and friendly setting for chat about all types of web-related stuff. All welcome.&lt;/p&gt;&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;how_to_find_us&quot;</span><span class="p">:</span> <span class="s2">&quot;Meet in the Tulloch Room. Ask at reception if you&#39;re unsure how to find it.&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;The Highland Web Group Monthly Meetup&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;headcount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;group&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1744559</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;group_lat&quot;</span><span class="p">:</span> <span class="mf">57.47999954223633</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Highland Web Group&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;group_lon&quot;</span><span class="p">:</span> <span class="mf">-4.230000019073486</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;join_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;open&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;urlname&quot;</span><span class="p">:</span> <span class="s2">&quot;Highland-Web-Group&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;who&quot;</span><span class="p">:</span> <span class="s2">&quot;Members&quot;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}]</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A custom <em>munge</em> function is defined for handling results returned from the
+API.</p>
+
+<figure class='code'><figcaption><span>event.js</span><a href='https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">App</span><span class="p">.</span><span class="nx">Event</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">munge</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">json</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">json</span><span class="p">.</span><span class="nx">group</span> <span class="o">&amp;&amp;</span> <span class="nx">json</span><span class="p">.</span><span class="nx">group</span><span class="p">.</span><span class="nx">id</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">json</span><span class="p">.</span><span class="nx">group_id</span> <span class="o">=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">group</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">json</span><span class="p">.</span><span class="nx">group</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The group id is extracted from the nested object and set the group_id key on the
+top level event object so ember data properly handles the belongsTo
+relationship. The last thing to do is set the JSON group object to null so
+ember data doesn&#8217;t try and materialise a App.Group from this record.</p>
+
+<h3><a id="rsvps"></a>Rsvp Model</h3>
+
+<p>The data returned for an rsvp is structure slightly differently to that of an Event.</p>
+
+<figure class='code'><figcaption><span>rsvps.json</span><a href='http://www.meetup.com/meetup_api/console/?path=/2/rsvps'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;results&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;response&quot;</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;member&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Blair Millen&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;member_id&quot;</span><span class="p">:</span> <span class="mi">8357569</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nt">&quot;member_photo&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;photo_link&quot;</span><span class="p">:</span> <span class="s2">&quot;http://photos2.meetupstatic.com/photos/member/3/b/e/f/member_5175343.jpeg&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;highres_link&quot;</span><span class="p">:</span> <span class="s2">&quot;http://photos2.meetupstatic.com/photos/member/3/b/e/f/highres_5175343.jpeg&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;thumb_link&quot;</span><span class="p">:</span> <span class="s2">&quot;http://photos2.meetupstatic.com/photos/member/3/b/e/f/thumb_5175343.jpeg&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;photo_id&quot;</span><span class="p">:</span> <span class="mi">5175343</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nt">&quot;created&quot;</span><span class="p">:</span> <span class="mi">1364297767000</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;event&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;ghnjqyrgbvb&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;time&quot;</span><span class="p">:</span> <span class="mi">1366135200000</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;event_url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.meetup.com/Highland-Web-Group/events/111106332/&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;The Highland Web Group Monthly Meetup&quot;</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nt">&quot;mtime&quot;</span><span class="p">:</span> <span class="mi">1364297767000</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;guests&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;rsvp_id&quot;</span><span class="p">:</span> <span class="mi">741139992</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;venue&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">6200762</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">-4.2325</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;repinned&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Eden Court&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;address_1&quot;</span><span class="p">:</span> <span class="s2">&quot;Bishops Road&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">57.472176</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;country&quot;</span><span class="p">:</span> <span class="s2">&quot;gb&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;city&quot;</span><span class="p">:</span> <span class="s2">&quot;Inverness&quot;</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nt">&quot;group&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1744559</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;group_lat&quot;</span><span class="p">:</span> <span class="mf">57.47999954223633</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;group_lon&quot;</span><span class="p">:</span> <span class="mf">-4.230000019073486</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;join_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;open&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;urlname&quot;</span><span class="p">:</span> <span class="s2">&quot;Highland-Web-Group&quot;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}]</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The Rsvp model looks like this.</p>
+
+<figure class='code'><figcaption><span>rsvp.js</span><a href='https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">attr</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">App</span><span class="p">.</span><span class="nx">Rsvp</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">event</span><span class="o">:</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">belongsTo</span><span class="p">(</span><span class="s1">&#39;App.Event&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">memberLink</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="s2">&quot;http://www.meetup.com/members/&quot;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;member.member_id&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}.</span><span class="nx">property</span><span class="p">(</span><span class="s1">&#39;member&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">comments</span><span class="o">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">created</span><span class="o">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">member</span><span class="o">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;object&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">member_photo</span><span class="o">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;object&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">response</span><span class="o">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">),</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">App</span><span class="p">.</span><span class="nx">Rsvp</span><span class="p">.</span><span class="nx">sync</span> <span class="o">=</span> <span class="nx">App</span><span class="p">.</span><span class="nx">meetupSync</span><span class="p">(</span><span class="s1">&#39;rsvp&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The Rsvp models munge function does a little more work.</p>
+
+<figure class='code'><figcaption><span>rsvp.js</span><a href='https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">App</span><span class="p">.</span><span class="nx">Rsvp</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">munge</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">json</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">json</span><span class="p">.</span><span class="nx">rsvp_id</span> <span class="o">&amp;&amp;</span> <span class="nx">json</span><span class="p">.</span><span class="nx">rsvp_id</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">){</span>
+</span><span class='line'>    <span class="c1">//ember-data wont accept -1 id</span>
+</span><span class='line'>    <span class="nx">json</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="s2">&quot;RecurringOrganizersRsvpId&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>    <span class="nx">json</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">rsvp_id</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">json</span><span class="p">.</span><span class="nx">event</span><span class="p">){</span>
+</span><span class='line'>    <span class="nx">json</span><span class="p">.</span><span class="nx">event_id</span> <span class="o">=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">json</span><span class="p">.</span><span class="nx">event</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">json</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The rsvp data returned by the API uses &#8216;rsvp_id&#8217; instead of &#8216;id&#8217; for the object id and it also sets the rsvp_id to -1 if it a repeating event that hasn&#8217;t been rsvp&#8217;d by anybody but the host. ember-data doesn&#8217;t handle -1 id so we set this to something else or if an ordinary id is returned we change the key from rsvp_id to id.</p>
+
+<p>As with the Event result data the Rsvp result data contains a nested object. In this case it&#8217;s the data for the event the rsvp belongs to. We extract the events id and set the JSON Event object to null.</p>
+
+<h2>Security</h2>
+
+<p><a href="http://www.json-p.org">JSONP</a> or <a href="http://www.w3.org/wiki/CORS">CORS</a> can be used to make requests from different domains to the Meetup
+API. The Meetup CORS requires OAuth authentication but we don&#8217;t want to require
+website visitors signing in to view publicly available information. JSONP on
+the other hand requires an API key and because we&#8217;re building a javascript app
+this API key will be viewable by anybody if they look at the javascript files.
+Ideally Meetup API key authentication could be tied to a specific domain that
+can only be specified via their web dashboard so me as the owner of the key
+could specify that it should only work for <a href="http://highlandwebgroup.github.com">highlandwebgroup.github.com</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
     <a href="/blog/archives">Blog Archives</a>
@@ -89,6 +603,10 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/04/02/ember-data-and-the-meetup-api/">Ember Data and the Meetup API</a>
+      </li>
     
   </ul>
 </section>
