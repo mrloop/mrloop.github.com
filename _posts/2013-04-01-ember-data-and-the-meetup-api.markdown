@@ -6,6 +6,8 @@ comments: true
 categories: [Javascript, Ember, Ember Data]
 ---
 
+# Warning: Uses Deprecated Ember Data 0.12
+
 I'm a member of the highland web group and they were looking for somebody to
 create a website for the group. Alisdair and myself were interested in doing
 so. The group's organized via [meetup.com](http://www.meetup.com/Highland-Web-Group/) and they have
