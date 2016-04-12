@@ -76,7 +76,7 @@
   <article class="post-content">
     <p>I recently wrote about using <a href="https://www.npmjs.com/package/ember-retry">ember-retry</a> in a previous <a href="/javascript/ember/2016/03/26/retrying-functions-in-ember.html">blog post</a> to retry a function in ember with exponential backoff. The next day I watched the <a href="http://www.youtube.com/watch?v=uVr5HWzecKI&amp;t=1h08m05s">Ember.js NYC</a> video about <a href="http://ember-concurrency.com">ember-concurrency</a> specifically <a href="http://www.youtube.com/watch?v=uVr5HWzecKI&amp;t=1h51m26s">Loop until operation succeeds, with exponential backoff</a></p>
 
-<p>So how do you implemnt exponential backoff with ember-concurrency?</p>
+<p>So how do you implement exponential backoff with ember-concurrency?</p>
 
 <figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">import</span> <span class="nx">Ember</span> <span class="nx">from</span> <span class="s1">'ember'</span><span class="p">;</span>
 <span class="kr">import</span> <span class="p">{</span> <span class="nx">task</span><span class="p">,</span> <span class="nx">timeout</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">'ember-concurrency'</span><span class="p">;</span>

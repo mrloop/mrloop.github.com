@@ -6,15 +6,15 @@
 </description>
     <link>http://blog.mrloop.com/</link>
     <atom:link href="http://blog.mrloop.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 12 Apr 2016 21:39:52 +0100</pubDate>
-    <lastBuildDate>Tue, 12 Apr 2016 21:39:52 +0100</lastBuildDate>
+    <pubDate>Tue, 12 Apr 2016 21:47:04 +0100</pubDate>
+    <lastBuildDate>Tue, 12 Apr 2016 21:47:04 +0100</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
     
       <item>
         <title>Retrying functions with Ember Concurrency</title>
         <description>&lt;p&gt;I recently wrote about using &lt;a href=&quot;https://www.npmjs.com/package/ember-retry&quot;&gt;ember-retry&lt;/a&gt; in a previous &lt;a href=&quot;/javascript/ember/2016/03/26/retrying-functions-in-ember.html&quot;&gt;blog post&lt;/a&gt; to retry a function in ember with exponential backoff. The next day I watched the &lt;a href=&quot;http://www.youtube.com/watch?v=uVr5HWzecKI&amp;amp;t=1h08m05s&quot;&gt;Ember.js NYC&lt;/a&gt; video about &lt;a href=&quot;http://ember-concurrency.com&quot;&gt;ember-concurrency&lt;/a&gt; specifically &lt;a href=&quot;http://www.youtube.com/watch?v=uVr5HWzecKI&amp;amp;t=1h51m26s&quot;&gt;Loop until operation succeeds, with exponential backoff&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;So how do you implemnt exponential backoff with ember-concurrency?&lt;/p&gt;
+&lt;p&gt;So how do you implement exponential backoff with ember-concurrency?&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Ember&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;ember&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;task&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;timeout&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;ember-concurrency&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
