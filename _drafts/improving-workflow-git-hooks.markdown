@@ -73,7 +73,7 @@ if [ "$1" == "$2"  ] && [ ${NUM_CHECKOUTS} -eq 1 ]; then
 fi
 ```
 
-Running `git checkout -b MRLOOP_new_feature_branch` a new empty commit is created and instructions are printed to the console telling you how to add new cosmetic changes commits and how to easily rebase them before a pull request is made.
+Running `git checkout -b MRLOOP_new_feature_branch` a creates a new branch with an empty commit and instructions are printed to the console telling you how to add new cosmetic changes commits and how to easily rebase them before a pull request is made.
 
 ```sh
 $ git checkout -b MRLOOP_new_feature_branch
