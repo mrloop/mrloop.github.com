@@ -25,30 +25,30 @@ To keep code review simple and the cosmetic changes seperate from the feature ch
 
 Of course you don't know ahead of time what files you'll be touching or what cosmetic changes you'll make. This is where the `--fixup` commit flag is really useful. After the first cosmetic change, take a note of the commit sha `bcde234` and then for future cosmetic commits use `git commit --fixup bcde234`. Your history will look something like
 
-{% highlight sh %}
+```sh
 $ git log --oneline --decorate
 defg456 (HEAD, my-feature-branch) fixup! commit cosmetic
 cdef345 commit 3
 bcde234 commit cosmetic
 abcd123 commit 1
 wxyz789 (master)
-{% endhighlight %}
+```
 
 Now your ready to make a pull request, before you do so tidy up your git history by squashing the cosmetic commits together.
 
 
-{% highlight sh %}
+```sh
 $ git rebase --interactive --autosquash abcd123^
-{% endhighlight %}
+```
 
 Git will open your editor with the `fixup` commit in the correct place and marked to fixup.
 
-{% highlight sh %}
+```sh
 pick abcd123 commit 1
 pick bcde234 commit cosmetic
 fixup defg456  fixup! commit cosmetic
 pick cdef345 commit 3
-{% endhighlight %}
+```
 
 # Automate
 
@@ -56,7 +56,7 @@ Git [hooks](https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) are a 
 
 `.git/hooks/post-checkout`
 
-{% highlight ruby %}
+```sh
 #!/bin/bash
 if test "$3" == "0"; then exit; fi
 
@@ -71,11 +71,11 @@ if [ "$1" == "$2"  ] && [ ${NUM_CHECKOUTS} -eq 1 ]; then
   COSMETIC_COMMIT=$(git rev-parse --short --verify HEAD)
   echo -e ${MESSAGE//£1/$COSMETIC_COMMIT}
 fi
-{% endhighlight %}
+```
 
 Running `git checkout -b MRLOOP_new_feature_branch` a new empty commit is created and instructions are printed to the console telling you how to add new cosmetic changes commits and how to easily rebase them before a pull request is made.
 
-{% highlight sh %}
+```sh
 $ git checkout -b MRLOOP_new_feature_branch
 Switched to a new branch 'MRLOOP_new_feature_branch'
 [MRLOOP_new_feature_branch f3b7a19] Non functional updates
@@ -85,14 +85,13 @@ Before pull request run:
  git rebase --keep-empty --interactive --autosquash f3b7a19^
 Or if no cosmetic changes made:
  git rebase --interactive f3b7a19^
-{% endhighlight %}
+```
 
 If no cosmetic changes are made then `git rebase --interactive` without the `--keep-empty` flag and the empty cosmetic change commit is not picked.
 
-{% highlight sh %}
+```sh
 #pick f3b7a19 Non functional updates
 pick ob1cd34 first functional commit
 pick gh22f45 second functional commit
 pick vef44hi third functional commit
-{% endhighlight %}
-
+```
