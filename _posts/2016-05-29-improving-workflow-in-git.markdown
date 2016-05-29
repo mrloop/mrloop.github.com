@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "Improving workflow with git hooks"
+title: "Improving workflow in git"
 comments: true
 categories: [workflow]
 ---
 
-## Workflow
+# Workflow #
 
 The team I work in uses [git](https://www.git-scm.com/) day to day to manage [ticketsolves](http://www.ticketsolve.com/) codebase. In general the workflow is:
 
@@ -19,7 +19,7 @@ The team I work in uses [git](https://www.git-scm.com/) day to day to manage [ti
 
 As well as functional updates to the code base often there are cosmetic changes and updates to syntax. For example [rubocop](http://batsov.com/rubocop/) is used to check the code conforms to style guidelines. But being a large legacy code base rubocop is only run against new and changed files, large number of files written before rubocop was introduced are not checked. Only when a change in a legacy file is made does rubocop start checking it. A small change made to an old file can result in many rubocop warnings and to fix these a lot of small style updates to a file that have nothing to do with the feature.
 
-# Seperate Cosmetic from Functional Changes
+### Seperate Cosmetic from Functional Changes ###
 
 To keep code review simple and the cosmetic changes seperate from the feature changes cosmetic changes should be added in seperate commits. Ideally all the cosmetic changes should be made in a single first commit to the branch. Consistently putting all the cosmetic changes in the first commit make it easier for the reviewer, they know where to expect all cosmetic changes.
 
@@ -50,7 +50,7 @@ fixup defg456  fixup! commit cosmetic
 pick cdef345 commit 3
 ```
 
-# Automate
+### Automate ###
 
 Git [hooks](https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) are a way to trigger custom scripts when certain actions occur. For instance [`post-checkout`](https://www.kernel.org/pub/software/scm/git/docs/githooks.html#_post_checkout) is run after `git checkout` is performed. This hook can be used to assist in my workflow and remind me to put my cosmetic changes in a single seperate commit.
 
@@ -95,3 +95,28 @@ pick ob1cd34 first functional commit
 pick gh22f45 second functional commit
 pick vef44hi third functional commit
 ```
+
+## Rewrite as git script ##
+
+But a friend didn't like having an empty commit and suggested rewritting as a git script.
+
+```sh
+#!/bin/bash
+
+DEFAULT_MSG="Non functional updates (auto)"
+MSG=${COMMIT_COSMETIC_MSG:-$DEFAULT_MSG}
+BRANCH_NAME=$(git symbolic-ref --short -q HEAD)
+PREVIOUS_BRANCH_LAST_COMMIT=$(git reflog --no-abbrev-commit | grep  "[a-zA-Z0-9]*HEAD@{[0-9]*}: checkout:.*$BRANCH_NAME"  | tail -n 1 | sed -n 's/\(^[a-zA-Z0-9]*\) .*/\1/p')
+LAST_COMMIT=$(git log -n 1 --pretty=format:%H)
+EXISTING_NON_FNC_COMMIT=$(git log --grep="^$MSG" $PREVIOUS_BRANCH_LAST_COMMIT..HEAD --pretty=format:%H)
+
+if [ $PREVIOUS_BRANCH_LAST_COMMIT != $LAST_COMMIT ] && [ -n "$EXISTING_NON_FNC_COMMIT" ]; then
+  git commit --fixup "$EXISTING_NON_FNC_COMMIT"
+else
+  git commit -m "$MSG"
+fi
+```
+
+Put this script in your `$PATH` in a file named `git-cosmetic-commit` and running `git cosmetic-commit` either creates a new commit for cosmetic changes or creates a fixup commit for the orignal cosmetic commit on the current branch.
+
+[mrloop/git_scripts](https://github.com/mrloop/git_scripts)

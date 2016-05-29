@@ -712,3 +712,9 @@ pre {
   color: #a6e22e; }
 
 /* Generic.Inserted & Diff Inserted */
+pre {
+  overflow-x: auto;
+  border-radius: 4px; }
+
+.highlight {
+  color: #eeeeee; }

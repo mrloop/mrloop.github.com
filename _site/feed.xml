@@ -6,9 +6,137 @@
 </description>
     <link>http://blog.mrloop.com/</link>
     <atom:link href="http://blog.mrloop.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 12 Apr 2016 21:47:04 +0100</pubDate>
-    <lastBuildDate>Tue, 12 Apr 2016 21:47:04 +0100</lastBuildDate>
+    <pubDate>Sun, 29 May 2016 10:07:43 +0100</pubDate>
+    <lastBuildDate>Sun, 29 May 2016 10:07:43 +0100</lastBuildDate>
     <generator>Jekyll v3.1.2</generator>
+    
+      <item>
+        <title>Improving workflow in git</title>
+        <description>&lt;h1 id=&quot;workflow&quot;&gt;Workflow&lt;/h1&gt;
+
+&lt;p&gt;The team I work in uses &lt;a href=&quot;https://www.git-scm.com/&quot;&gt;git&lt;/a&gt; day to day to manage &lt;a href=&quot;http://www.ticketsolve.com/&quot;&gt;ticketsolves&lt;/a&gt; codebase. In general the workflow is:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Create new feature branch.&lt;/li&gt;
+  &lt;li&gt;Do work in branch.&lt;/li&gt;
+  &lt;li&gt;Create a pull request.&lt;/li&gt;
+  &lt;li&gt;Reviewer offers criticism and suggestions.&lt;/li&gt;
+  &lt;li&gt;Update feature branch based on feedback.&lt;/li&gt;
+  &lt;li&gt;Repeat steps 4-6 until everyone is happy.&lt;/li&gt;
+  &lt;li&gt;Merge feature branch to master branch.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;As well as functional updates to the code base often there are cosmetic changes and updates to syntax. For example &lt;a href=&quot;http://batsov.com/rubocop/&quot;&gt;rubocop&lt;/a&gt; is used to check the code conforms to style guidelines. But being a large legacy code base rubocop is only run against new and changed files, large number of files written before rubocop was introduced are not checked. Only when a change in a legacy file is made does rubocop start checking it. A small change made to an old file can result in many rubocop warnings and to fix these a lot of small style updates to a file that have nothing to do with the feature.&lt;/p&gt;
+
+&lt;h3 id=&quot;seperate-cosmetic-from-functional-changes&quot;&gt;Seperate Cosmetic from Functional Changes&lt;/h3&gt;
+
+&lt;p&gt;To keep code review simple and the cosmetic changes seperate from the feature changes cosmetic changes should be added in seperate commits. Ideally all the cosmetic changes should be made in a single first commit to the branch. Consistently putting all the cosmetic changes in the first commit make it easier for the reviewer, they know where to expect all cosmetic changes.&lt;/p&gt;
+
+&lt;p&gt;Of course you don’t know ahead of time what files you’ll be touching or what cosmetic changes you’ll make. This is where the &lt;code class=&quot;highlighter-rouge&quot;&gt;--fixup&lt;/code&gt; commit flag is really useful. After the first cosmetic change, take a note of the commit sha &lt;code class=&quot;highlighter-rouge&quot;&gt;bcde234&lt;/code&gt; and then for future cosmetic commits use &lt;code class=&quot;highlighter-rouge&quot;&gt;git commit --fixup bcde234&lt;/code&gt;. Your history will look something like&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;git log --oneline --decorate
+defg456 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;HEAD, my-feature-branch&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; fixup! commit cosmetic
+cdef345 commit 3
+bcde234 commit cosmetic
+abcd123 commit 1
+wxyz789 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;master&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now your ready to make a pull request, before you do so tidy up your git history by squashing the cosmetic commits together.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;git rebase --interactive --autosquash abcd123^
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Git will open your editor with the &lt;code class=&quot;highlighter-rouge&quot;&gt;fixup&lt;/code&gt; commit in the correct place and marked to fixup.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;pick abcd123 commit 1
+pick bcde234 commit cosmetic
+fixup defg456  fixup! commit cosmetic
+pick cdef345 commit 3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;automate&quot;&gt;Automate&lt;/h3&gt;
+
+&lt;p&gt;Git &lt;a href=&quot;https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Hooks&quot;&gt;hooks&lt;/a&gt; are a way to trigger custom scripts when certain actions occur. For instance &lt;a href=&quot;https://www.kernel.org/pub/software/scm/git/docs/githooks.html#_post_checkout&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;post-checkout&lt;/code&gt;&lt;/a&gt; is run after &lt;code class=&quot;highlighter-rouge&quot;&gt;git checkout&lt;/code&gt; is performed. This hook can be used to assist in my workflow and remind me to put my cosmetic changes in a single seperate commit.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;.git/hooks/post-checkout&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;test&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$3&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;0&quot;&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;exit&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;fi
+
+&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;BRANCH_NAME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;git symbolic-ref --short -q HEAD&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;NUM_CHECKOUTS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;git reflog | grep -o &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;BRANCH_NAME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; | wc -l&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;MESSAGE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;To commit cosmetic changes:&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; git commit --fixup £1&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;Before pull request run:&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; git rebase --interactive --keep-empty --autosquash £1^&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;Or if no cosmetic chagnes made:&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; git rebase --interactive £1&quot;&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;#if the refs of the previous and new heads are the same&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#and the number of checkouts equals one a new branch has been created&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$1&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$2&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;NUM_CHECKOUTS&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; -eq 1 &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then
+  &lt;/span&gt;git commit --allow-empty -m &lt;span class=&quot;s2&quot;&gt;&quot;Non functional updates&quot;&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;COSMETIC_COMMIT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;git rev-parse --short --verify HEAD&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; -e &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;MESSAGE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;//£1/&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$COSMETIC_COMMIT&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Running &lt;code class=&quot;highlighter-rouge&quot;&gt;git checkout -b MRLOOP_new_feature_branch&lt;/code&gt; a creates a new branch with an empty commit and instructions are printed to the console telling you how to add new cosmetic changes commits and how to easily rebase them before a pull request is made.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;git checkout -b MRLOOP_new_feature_branch
+Switched to a new branch &lt;span class=&quot;s1&quot;&gt;&#39;MRLOOP_new_feature_branch&#39;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;MRLOOP_new_feature_branch f3b7a19] Non functional updates
+To commit cosmetic changes:
+ git commit --fixup f3b7a19
+Before pull request run:
+ git rebase --keep-empty --interactive --autosquash f3b7a19^
+Or &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;no cosmetic changes made:
+ git rebase --interactive f3b7a19^
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;If no cosmetic changes are made then &lt;code class=&quot;highlighter-rouge&quot;&gt;git rebase --interactive&lt;/code&gt; without the &lt;code class=&quot;highlighter-rouge&quot;&gt;--keep-empty&lt;/code&gt; flag and the empty cosmetic change commit is not picked.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#pick f3b7a19 Non functional updates&lt;/span&gt;
+pick ob1cd34 first functional commit
+pick gh22f45 second functional commit
+pick vef44hi third functional commit
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;rewrite-as-git-script&quot;&gt;Rewrite as git script&lt;/h2&gt;
+
+&lt;p&gt;But a friend didn’t like having an empty commit and suggested rewritting as a git script.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;DEFAULT_MSG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Non functional updates (auto)&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;MSG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;COMMIT_COSMETIC_MSG&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;:-&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$DEFAULT_MSG&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;BRANCH_NAME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;git symbolic-ref --short -q HEAD&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;PREVIOUS_BRANCH_LAST_COMMIT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;git reflog --no-abbrev-commit | grep  &lt;span class=&quot;s2&quot;&gt;&quot;[a-zA-Z0-9]*HEAD@{[0-9]*}: checkout:.*&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$BRANCH_NAME&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;  | tail -n 1 | sed -n &lt;span class=&quot;s1&quot;&gt;&#39;s/\(^[a-zA-Z0-9]*\) .*/\1/p&#39;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LAST_COMMIT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;git log -n 1 --pretty&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;format:%H&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;EXISTING_NON_FNC_COMMIT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;git log --grep&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;^&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$MSG&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$PREVIOUS_BRANCH_LAST_COMMIT&lt;/span&gt;..HEAD --pretty&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;format:%H&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$PREVIOUS_BRANCH_LAST_COMMIT&lt;/span&gt; !&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$LAST_COMMIT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -n &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$EXISTING_NON_FNC_COMMIT&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then
+  &lt;/span&gt;git commit --fixup &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$EXISTING_NON_FNC_COMMIT&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;else
+  &lt;/span&gt;git commit -m &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$MSG&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Put this script in your &lt;code class=&quot;highlighter-rouge&quot;&gt;$PATH&lt;/code&gt; in a file named &lt;code class=&quot;highlighter-rouge&quot;&gt;git-cosmetic-commit&lt;/code&gt; and running &lt;code class=&quot;highlighter-rouge&quot;&gt;git cosmetic-commit&lt;/code&gt; either creates a new commit for cosmetic changes or creates a fixup commit for the orignal cosmetic commit on the current branch.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/mrloop/git_scripts&quot;&gt;mrloop/git_scripts&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sun, 29 May 2016 00:00:00 +0100</pubDate>
+        <link>http://blog.mrloop.com/workflow/2016/05/29/improving-workflow-in-git.html</link>
+        <guid isPermaLink="true">http://blog.mrloop.com/workflow/2016/05/29/improving-workflow-in-git.html</guid>
+        
+        
+        <category>workflow</category>
+        
+      </item>
     
       <item>
         <title>Retrying functions with Ember Concurrency</title>
