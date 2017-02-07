@@ -113,4 +113,3 @@ I now have my desired private key management setup how I want it. A terminal bas
 <asciinema-player font-size="15" loop="true" autoplay="true" src="/video/gpg-agent.json"></asciinema-player>
 <script src="/js/asciinema-player.js"></script>
 
-<video controls width="100%" src="/video/enigmail.m4v"></video>
