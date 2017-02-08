@@ -1,0 +1,26 @@
+video {
+  width: 100%;
+  border-radius: 4px;
+}
+
+.asciinema-player-wrapper {
+  margin: 8px 0 8px 0;
+  background-color: #121314;
+  border-radius: 4px;
+}
+
+.asciinema-player {
+  border-radius: 4px;
+}
+
+@include media-query($on-laptop) {
+  .asciinema-terminal {
+    font-size: 12px !important;
+  }
+}
+
+@include media-query($on-palm) {
+  .asciinema-terminal {
+    font-size: 8px !important;
+  }
+}
