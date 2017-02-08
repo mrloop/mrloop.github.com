@@ -10,7 +10,7 @@ I recently wrote about using [ember-retry](https://www.npmjs.com/package/ember-r
 
 So how do you implement exponential backoff with ember-concurrency?
 
-{% highlight javascript %}
+```javascript
 import Ember from 'ember';
 import { task, timeout } from 'ember-concurrency';
 
@@ -51,4 +51,4 @@ export default Ember.Component.extend({
   }
 
 });
-{% endhighlight %}
+```

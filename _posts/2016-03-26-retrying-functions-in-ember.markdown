@@ -8,7 +8,7 @@ categories: [Javascript, Ember]
 
 For a recent project [questionr.com](https://questionr.com) I needed to handle the deployment of a WebSocket server, the server would go down for a couple of seconds during the deploy and the client would lose it's connection. To handle the reconnection I wrote a simple ember addon, [ember-retry](https://www.npmjs.com/package/ember-retry) which is used to retry the WebSocket server with an exponential backoff.
 
-{% highlight javascript %}
+```javascript
 import Ember from 'ember';
 import retry from 'ember-retry/retry';
 
@@ -31,7 +31,7 @@ export default Ember.Component.extend({
   }
 
 });
-{% endhighlight %}
+```
 
 Where a library already uses promises, retry can be invoked without passing a function with resolve and reject arguments and instead returning the promise e.g.
 

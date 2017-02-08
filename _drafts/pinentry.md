@@ -22,7 +22,7 @@ I updated GnuPG to the latest version using https://gist.github.com/vt0r/a2f8c0b
 
 My `.zshrc` contains the following:
 
-````sh
+```sh
 # gpg
 #
 GPG_TTY=$(tty)
@@ -57,11 +57,11 @@ ssh-delete(){
   grep -o ^[A-Z0-9]* ~/.gnupg/sshcontrol | xargs -I% rm ~/.gnupg/private-keys-v1.d/%.key
   echo '' > ~/.gnupg/sshcontrol
 }
-````
+```
 
 Next a simple shim for pinentry is needed, when invoked it selects either a terminal pinentry program or a GUI pinentry program based on contents of `/tmp/pinentry-app`
 
-````sh
+```sh
 #!/bin/bash
 #
 # http://askubuntu.com/questions/858347/disable-gnome-from-asking-passphrase-in-gui-when-using-ssh-and-gpg-from-terminal#858947
@@ -76,29 +76,29 @@ if [ $(cat /tmp/pinentry-app) = "x11" ]; then
 else
   exec "$PINENTRY_TERMINAL" "$@"
 fi
-````
+```
 
 This needs to be linked to pinentry so it is used as our default pinentry program.
 
-````sh
+```sh
 ln -s ~/bin/pinentry /usr/local/bin/pinentry -f
-````
+```
 
 The `gpg-agent` needs ssh enabled and then stopped, it'll automatically restart when needed.
-````sh
+```sh
 echo 'enable-ssh-support' >> ~/.gnupg/gpg-agent.conf
 gpgconf --kill gpg-agent
-````
+```
 
 Next the GUI applications using GnuPG need configured, in my case Thunderbird Enigmail.
 First another simple shim is created `~/bin/gpg2-thunderbird`, this time for `gpg2`, which tells `gpg-agent` to use the GUI pinentry.
 
-````sh
+```sh
 #!/bin/sh
 
 echo "x11" > /tmp/pinentry-app
 exec "/usr/local/bin/gpg2" "$@"
-````
+```
 
 Then `Thunderbird > Enigmail > Preferences > Basic > Files and Directories > Override with` is updated with the location of the `gpg2` shim.
 
