@@ -12,7 +12,7 @@ I regularly use gpg and ssh keys during the day, from signing git commits, encry
 1. gnome-keyring-agent was not always handling encrypted private keys correctly resulting in some scripts failing to authenticate with an error message `too many authentication attempts` even though `ssh-add -l` showed the correct keys where available.
 2. using `ssh`, `ssh-add` from `gpg2` from the command line when a password was requested to decrypt a key a GUI dialog would pop up disrupting my focus.
 
-Ideally a terminal based password entry would present it's self when working in a terminal and a GUI dialog present itself when working with a desktop app. A solution would also have to fix the `too many authentication attempts` error.
+Ideally a terminal based password entry would present itself when working in a terminal and a GUI dialog present itself when working with a desktop app. A solution would also have to fix the `too many authentication attempts` error.
 
 ### gpg-agent ###
 
