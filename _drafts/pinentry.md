@@ -14,7 +14,7 @@ I regularly use gpg and ssh keys during the day, from signing git commits, encry
 
 Ideally a terminal based password entry would present it's self when working in a terminal and a GUI dialog present itself when working with a desktop app. A solution would also have to fix the `too many authentication attempts` error.
 
-#### Solution ####
+### gpg-agent ###
 
 The [`gpg-agent`](https://www.gnupg.org/documentation/manuals/gnupg/Invoking-GPG_002dAGENT.html#Invoking-GPG_002dAGENT) is a good candidate, it is a daemon to manage secret keys similar the [`ssh-agent`](http://man.openbsd.org/OpenBSD-current/man1/ssh-agent.1) or the [`gnome-keyring-daemon`](https://wiki.gnome.org/Projects/GnomeKeyring/Ssh). It's used by `gpg2` and can be used as an agent for ssh. `gpg-agent` has numerous [pinentry](https://www.gnupg.org/related_software/pinentry/index.en.html) programs that allow gpg to read passphrases in a secure manner, there are GUI and terminal based programs and the `gpg-agent` can be configured to use different pinentry programs.
 
@@ -106,10 +106,10 @@ Then `Thunderbird > Enigmail > Preferences > Basic > Files and Directories > Ove
 
 I now have my desired private key management setup how I want it. A terminal based pinentry when working in the terminal and a GUI based pinentry when working from a GUI.
 
-#### GUI pin entry ####
+### GUI pin entry ###
 <video controls src="/video/enigmail.m4v"></video>
 
-#### Terminal pin entry ####
+### Terminal pin entry ###
 <asciinema-player font-size="15" loop="true" autoplay="true" src="/video/gpg-agent.json"></asciinema-player>
 <script src="/js/asciinema-player.js"></script>
 
