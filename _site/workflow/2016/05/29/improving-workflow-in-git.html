@@ -13,6 +13,7 @@
   <link rel="canonical" href="http://blog.mrloop.com/workflow/2016/05/29/improving-workflow-in-git.html">
   <link rel="alternate" type="application/rss+xml" title="mrloop" href="http://blog.mrloop.com/feed.xml" />
   <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/css/asciinema-player.css" />
 
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -48,6 +49,8 @@
         
           
           <a class="page-link" href="/about/">About</a>
+          
+        
           
         
           
@@ -96,7 +99,7 @@
 
 <p>Of course you don’t know ahead of time what files you’ll be touching or what cosmetic changes you’ll make. This is where the <code class="highlighter-rouge">--fixup</code> commit flag is really useful. After the first cosmetic change, take a note of the commit sha <code class="highlighter-rouge">bcde234</code> and then for future cosmetic commits use <code class="highlighter-rouge">git commit --fixup bcde234</code>. Your history will look something like</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>git log --oneline --decorate
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>git log --oneline --decorate
 defg456 <span class="o">(</span>HEAD, my-feature-branch<span class="o">)</span> fixup! commit cosmetic
 cdef345 commit 3
 bcde234 commit cosmetic
@@ -107,13 +110,13 @@ wxyz789 <span class="o">(</span>master<span class="o">)</span>
 
 <p>Now your ready to make a pull request, before you do so tidy up your git history by squashing the cosmetic commits together.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>git rebase --interactive --autosquash abcd123^
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>git rebase --interactive --autosquash abcd123^
 </code></pre>
 </div>
 
 <p>Git will open your editor with the <code class="highlighter-rouge">fixup</code> commit in the correct place and marked to fixup.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>pick abcd123 commit 1
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code>pick abcd123 commit 1
 pick bcde234 commit cosmetic
 fixup defg456  fixup! commit cosmetic
 pick cdef345 commit 3
@@ -126,7 +129,7 @@ pick cdef345 commit 3
 
 <p><code class="highlighter-rouge">.git/hooks/post-checkout</code></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 <span class="k">if </span><span class="nb">test</span> <span class="s2">"</span><span class="nv">$3</span><span class="s2">"</span> <span class="o">==</span> <span class="s2">"0"</span>; <span class="k">then </span><span class="nb">exit</span>; <span class="k">fi
 
 </span><span class="nv">BRANCH_NAME</span><span class="o">=</span><span class="k">$(</span>git symbolic-ref --short -q HEAD<span class="k">)</span>
@@ -145,7 +148,7 @@ pick cdef345 commit 3
 
 <p>Running <code class="highlighter-rouge">git checkout -b MRLOOP_new_feature_branch</code> a creates a new branch with an empty commit and instructions are printed to the console telling you how to add new cosmetic changes commits and how to easily rebase them before a pull request is made.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>git checkout -b MRLOOP_new_feature_branch
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>git checkout -b MRLOOP_new_feature_branch
 Switched to a new branch <span class="s1">'MRLOOP_new_feature_branch'</span>
 <span class="o">[</span>MRLOOP_new_feature_branch f3b7a19] Non functional updates
 To commit cosmetic changes:
@@ -159,7 +162,7 @@ Or <span class="k">if </span>no cosmetic changes made:
 
 <p>If no cosmetic changes are made then <code class="highlighter-rouge">git rebase --interactive</code> without the <code class="highlighter-rouge">--keep-empty</code> flag and the empty cosmetic change commit is not picked.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c">#pick f3b7a19 Non functional updates</span>
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="c">#pick f3b7a19 Non functional updates</span>
 pick ob1cd34 first functional commit
 pick gh22f45 second functional commit
 pick vef44hi third functional commit
@@ -170,7 +173,7 @@ pick vef44hi third functional commit
 
 <p>But a friend didn’t like having an empty commit and suggested rewritting as a git script.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 
 <span class="nv">DEFAULT_MSG</span><span class="o">=</span><span class="s2">"Non functional updates (auto)"</span>
 <span class="nv">MSG</span><span class="o">=</span><span class="k">${</span><span class="nv">COMMIT_COSMETIC_MSG</span><span class="k">:-</span><span class="nv">$DEFAULT_MSG</span><span class="k">}</span>

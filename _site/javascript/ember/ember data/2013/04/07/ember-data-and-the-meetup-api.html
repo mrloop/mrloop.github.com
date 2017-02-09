@@ -13,6 +13,7 @@
   <link rel="canonical" href="http://blog.mrloop.com/javascript/ember/ember%20data/2013/04/07/ember-data-and-the-meetup-api.html">
   <link rel="alternate" type="application/rss+xml" title="mrloop" href="http://blog.mrloop.com/feed.xml" />
   <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/css/asciinema-player.css" />
 
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -48,6 +49,8 @@
         
           
           <a class="page-link" href="/about/">About</a>
+          
+        
           
         
           
@@ -105,13 +108,13 @@ letting you write a sync object for specific models in your API so you can work 
 
 <p>I define a function <em>meetupSync</em> which returns a generic sync object.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">//https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/MeetupAdapter.js</span>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">//https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/MeetupAdapter.js</span>
 <span class="nx">App</span><span class="p">.</span><span class="nx">meetupSync</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">type</span><span class="p">){</span>
   <span class="nx">sync</span> <span class="o">=</span> <span class="p">{</span>
     <span class="na">munge</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">json</span><span class="p">){</span><span class="nx">json</span><span class="p">},</span>
-    <span class="nx">findHasManyQueryOptions</span><span class="err">:</span> <span class="p">{},</span>
-    <span class="nx">base_url</span><span class="err">:</span><span class="s2">"https://api.meetup.com/2"</span><span class="p">,</span>
-    <span class="nx">find</span><span class="err">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">process</span><span class="p">){</span>
+    <span class="na">findHasManyQueryOptions</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">base_url</span><span class="p">:</span><span class="s2">"https://api.meetup.com/2"</span><span class="p">,</span>
+    <span class="na">find</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">process</span><span class="p">){</span>
       <span class="nx">q</span> <span class="o">=</span> <span class="p">{};</span>
       <span class="nx">q</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">type</span><span class="o">+</span><span class="s2">"_id"</span><span class="p">]</span> <span class="o">=</span> <span class="nx">id</span><span class="p">;</span>
       <span class="nx">_munge</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">munge</span><span class="p">;</span>
@@ -121,7 +124,7 @@ letting you write a sync object for specific models in your API so you can work 
           <span class="p">.</span><span class="nx">load</span><span class="p">();</span>
       <span class="p">});</span>
     <span class="p">},</span>
-    <span class="nx">query</span><span class="err">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">process</span><span class="p">){</span>
+    <span class="na">query</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">process</span><span class="p">){</span>
       <span class="nx">_munge</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">munge</span><span class="p">;</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">_query</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">){</span>
         <span class="nx">process</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">results</span> <span class="o">||</span> <span class="p">[])</span>
@@ -129,13 +132,13 @@ letting you write a sync object for specific models in your API so you can work 
           <span class="p">.</span><span class="nx">load</span><span class="p">();</span>
       <span class="p">})</span>
     <span class="p">},</span>
-    <span class="nx">findHasMany</span><span class="err">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">record</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">processor</span><span class="p">){</span>
+    <span class="na">findHasMany</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">record</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">processor</span><span class="p">){</span>
       <span class="nx">relationship_model</span> <span class="o">=</span> <span class="nx">record</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">typeForRelationship</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">relationship</span><span class="p">)</span>
       <span class="nx">q</span> <span class="o">=</span> <span class="p">{};</span>
       <span class="nx">q</span><span class="p">[</span><span class="nx">record</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">type</span><span class="o">+</span><span class="s2">"_id"</span><span class="p">]</span> <span class="o">=</span> <span class="nx">record</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
       <span class="nx">relationship_model</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">Ember</span><span class="p">.</span><span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span><span class="nx">q</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">findHasManyQueryOptions</span><span class="p">),</span> <span class="nx">processor</span><span class="p">)</span>
     <span class="p">},</span>
-    <span class="nx">_query</span><span class="err">:</span> <span class="nx">_</span><span class="p">.</span><span class="nx">rateLimit</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">processResult</span><span class="p">){</span>
+    <span class="na">_query</span><span class="p">:</span> <span class="nx">_</span><span class="p">.</span><span class="nx">rateLimit</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">processResult</span><span class="p">){</span>
       <span class="nx">Ember</span><span class="p">.</span><span class="nx">assert</span><span class="p">(</span><span class="s2">"Must specify type"</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">type</span><span class="p">);</span>
       <span class="nx">App</span><span class="p">.</span><span class="nx">ajax</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">base_url</span><span class="o">+</span><span class="s2">"/"</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">type</span><span class="o">+</span><span class="s2">"s"</span><span class="p">,</span> <span class="s2">"GET"</span><span class="p">,</span> <span class="p">{</span><span class="na">data</span><span class="p">:</span> <span class="nx">query</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">processResult</span><span class="p">);</span>
     <span class="p">},</span> <span class="mi">100</span><span class="p">),</span>
@@ -159,7 +162,7 @@ as needed. I define 3 functions for finding records from the API.</p>
 <p>In my implementation <em>find</em> and <em>findHasMany</em> both use <em>query</em> to find records.
 The <em>query</em> function takes 2 arguments, ‘query’ e.g.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span> <span class="nl">status</span><span class="p">:</span> <span class="s1">'upcoming'</span> <span class="p">}</span>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="p">{</span> <span class="nl">status</span><span class="p">:</span> <span class="s1">'upcoming'</span> <span class="p">}</span>
 </code></pre>
 </div>
 <p>and a a function ‘process’ with we use to load the JSON from our request into the Data Store after we have done our own
@@ -171,7 +174,7 @@ for too frequent API calls.</p>
 
 <h3 id="event-models">Event Models</h3>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">//https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js</span>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">//https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js</span>
 <span class="kd">var</span> <span class="nx">attr</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">;</span>
 
 <span class="nx">App</span><span class="p">.</span><span class="nx">Event</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
@@ -200,7 +203,7 @@ for too frequent API calls.</p>
 
 <p>The Event model is defined then its sync object is initialised.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nx">App</span><span class="p">.</span><span class="nx">Event</span><span class="p">.</span><span class="nx">sync</span> <span class="o">=</span> <span class="nx">App</span><span class="p">.</span><span class="nx">meetupSync</span><span class="p">(</span><span class="s1">'event'</span><span class="p">);</span>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">App</span><span class="p">.</span><span class="nx">Event</span><span class="p">.</span><span class="nx">sync</span> <span class="o">=</span> <span class="nx">App</span><span class="p">.</span><span class="nx">meetupSync</span><span class="p">(</span><span class="s1">'event'</span><span class="p">);</span>
 </code></pre>
 </div>
 
@@ -210,7 +213,7 @@ all the information we want to load a App.Group object into the data store.
 
 <p><em>events.json http://www.meetup.com/meetup_api/console/?path=/2/events</em></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+<div class="language-json highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
   </span><span class="nt">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
     </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"upcoming"</span><span class="p">,</span><span class="w">
@@ -254,7 +257,7 @@ all the information we want to load a App.Group object into the data store.
 <p>A custom <em>munge</em> function is defined for handling results returned from the
 API.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">//event.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js</span>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">//event.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js</span>
 <span class="nx">App</span><span class="p">.</span><span class="nx">Event</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">munge</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">json</span><span class="p">){</span>
   <span class="k">if</span><span class="p">(</span><span class="nx">json</span><span class="p">.</span><span class="nx">group</span> <span class="o">&amp;&amp;</span> <span class="nx">json</span><span class="p">.</span><span class="nx">group</span><span class="p">.</span><span class="nx">id</span><span class="p">){</span>
     <span class="nx">json</span><span class="p">.</span><span class="nx">group_id</span> <span class="o">=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">group</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
@@ -269,13 +272,13 @@ top level event object so ember data properly handles the belongsTo
 relationship. The last thing to do is set the JSON group object to null so
 ember data doesn’t try and materialise a App.Group from this record.</p>
 
-<h3 id="a-idrsvpsarsvp-model"><a id="rsvps"></a>Rsvp Model</h3>
+<h3 id="rsvp-model"><a id="rsvps"></a>Rsvp Model</h3>
 
 <p>The data returned for an rsvp is structure slightly differently to that of an Event.</p>
 
 <p><em>rsvps.json http://www.meetup.com/meetup_api/console/?path=/2/rsvp</em></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+<div class="language-json highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
   </span><span class="nt">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
     </span><span class="nt">"response"</span><span class="p">:</span><span class="w"> </span><span class="s2">"yes"</span><span class="p">,</span><span class="w">
@@ -323,7 +326,7 @@ ember data doesn’t try and materialise a App.Group from this record.</p>
 
 <p>The Rsvp model looks like this.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">//rsvp.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js</span>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">//rsvp.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js</span>
 <span class="kd">var</span> <span class="nx">attr</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">;</span>
 
 <span class="nx">App</span><span class="p">.</span><span class="nx">Rsvp</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
@@ -346,7 +349,7 @@ ember data doesn’t try and materialise a App.Group from this record.</p>
 
 <p>The Rsvp models munge function does a little more work.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">//rsvp.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js</span>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">//rsvp.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js</span>
 <span class="nx">App</span><span class="p">.</span><span class="nx">Rsvp</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">munge</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">json</span><span class="p">){</span>
   <span class="k">if</span><span class="p">(</span><span class="nx">json</span><span class="p">.</span><span class="nx">rsvp_id</span> <span class="o">&amp;&amp;</span> <span class="nx">json</span><span class="p">.</span><span class="nx">rsvp_id</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">){</span>
     <span class="c1">//ember-data wont accept -1 id</span>

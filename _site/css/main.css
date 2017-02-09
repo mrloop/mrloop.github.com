@@ -718,3 +718,22 @@ pre {
 
 .highlight {
   color: #eeeeee; }
+
+video {
+  width: 100%;
+  border-radius: 4px; }
+
+.asciinema-player-wrapper {
+  margin: 8px 0 8px 0;
+  background-color: #121314;
+  border-radius: 4px; }
+
+.asciinema-player {
+  border-radius: 4px; }
+
+@media screen and (max-width: 800px) {
+  .asciinema-terminal {
+    font-size: 12px !important; } }
+@media screen and (max-width: 600px) {
+  .asciinema-terminal {
+    font-size: 8px !important; } }
