@@ -80,6 +80,7 @@
     <h1 id="private-keys">Private Keys</h1>
 
 <p>I regularly use gpg and ssh keys during the day, from signing git commits, encrypting sensitive messages to email and authenticating with servers. I regularly use gpg via <a href="https://enigmail.net/">Enignmail</a> and the <a href="https://www.mozilla.org/en-US/thunderbird/">Thunderbird</a> GUI and from the command line in <a href="http://zsh.sourceforge.net/">zsh</a>. I was having a couple of issues with the default ubuntu 16.04 setup for managing keys.</p>
+
 <ol>
   <li>gnome-keyring-agent was not always handling encrypted private keys correctly resulting in some scripts failing to authenticate with an error message <code class="highlighter-rouge">too many authentication attempts</code> even though <code class="highlighter-rouge">ssh-add -l</code> showed the correct keys where available.</li>
   <li>using <code class="highlighter-rouge">ssh</code>, <code class="highlighter-rouge">ssh-add</code> from <code class="highlighter-rouge">gpg2</code> from the command line when a password was requested to decrypt a key a GUI dialog would pop up disrupting my focus.</li>
