@@ -6,15 +6,131 @@
 </description>
     <link>http://blog.mrloop.com/</link>
     <atom:link href="http://blog.mrloop.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 09 Feb 2017 19:31:27 +0000</pubDate>
-    <lastBuildDate>Thu, 09 Feb 2017 19:31:27 +0000</lastBuildDate>
+    <pubDate>Tue, 31 Oct 2017 20:59:04 +0000</pubDate>
+    <lastBuildDate>Tue, 31 Oct 2017 20:59:04 +0000</lastBuildDate>
     <generator>Jekyll v3.4.0</generator>
+    
+      <item>
+        <title>Know the competition</title>
+        <description>&lt;p&gt;I do quite a bit of cycling, and have been thinking about racing in some competitive events again. A lot of the races are organized by British Cycling and for many of the competitive events lists of entrants are published. You can view entrants and their national and regional rankings based on points they’ve won for good placings in previous races.
+But there is no collated view of entrants and their points. What I want is a list of entrants ordered by there national and regional rankings to quickly see who to watch in a race.&lt;/p&gt;
 
+&lt;p&gt;My original notion was to build a simple API endpoint using &lt;a href=&quot;https://serverless.com/&quot;&gt;serverless&lt;/a&gt;, the single endpoint, &lt;code class=&quot;highlighter-rouge&quot;&gt;GET /competition/{id}&lt;/code&gt; would take the id of a race, scrape the relevant British Cycling webpages, cache them where possible and return a list of entrants ordered by ranking.
+A quick prototype confirmed this was possible but had a pretty dismal user experience. You had to go the britishcycling.org.uk find the race and then copy and paste the id into a web form and then get the returned results.&lt;/p&gt;
+
+&lt;p&gt;Ideally I want to list and search races and then select the race I’m interested in from the same user interface. There were two ways I thought would work well.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;A simple command line interface.&lt;/li&gt;
+  &lt;li&gt;A web extension which inserts a button into britishcycling.org.uk against each event listing which when pressed lists the entrants. Also will have a larger audience.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;race-lib&quot;&gt;&lt;a href=&quot;https://github.com/mrloop/race-lib&quot;&gt;race-lib&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;The first step was to extract scraping logic from prototype it should be&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;isomorphic, that is code will run in browser and in node&lt;/li&gt;
+  &lt;li&gt;injectable dependencies for fetching web pages and querying them.&lt;/li&gt;
+  &lt;li&gt;packaged for easy reuse&lt;/li&gt;
+  &lt;li&gt;include tests&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;As part of &lt;a href=&quot;https://emberjs.com/blog/2017/07/06/ember-2-14-released.html&quot;&gt;Ember.js&lt;/a&gt; I’ve been using &lt;a href=&quot;https://rollupjs.org/&quot;&gt;Rollup&lt;/a&gt;, but haven’t configured and used outwith of Ember.js. Rollup will give me a ES6 standardized module I can use in other projects. Re usability of lib is further increased by using injectable dependencies for fetching URLs and for querying html. For example in node &lt;a href=&quot;https://www.npmjs.com/package/cheerio&quot;&gt;Cheerio&lt;/a&gt; is used for parsing and querying html. &lt;a href=&quot;https://www.npmjs.com/package/node-fetch&quot;&gt;node-fetch&lt;/a&gt; a small library which brings the &lt;code class=&quot;highlighter-rouge&quot;&gt;window.fetch&lt;/code&gt; API to node is used.&lt;/p&gt;
+
+&lt;h4 id=&quot;inject&quot;&gt;Inject&lt;/h4&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Event&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'race-lib'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;cheerio&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'cheerio'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fetch&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'node-fetch'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;Event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;inject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'fetch'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fetch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;Event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;inject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'cheerio'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;cheerio&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;Event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;upcomming&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;events&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;events&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;evt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;evt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In the browser &lt;code class=&quot;highlighter-rouge&quot;&gt;window.fetch&lt;/code&gt; is used and jQuery used for query the html.&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;load&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;htmlString&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;o&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;parseHTML&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;htmlString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;selector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;o&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;selector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;Event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;inject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'fetch'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;window&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;fetch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;Event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;inject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'cheerio'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;Event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;upcomming&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;events&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;events&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;evt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;evt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h4 id=&quot;throttle&quot;&gt;Throttle&lt;/h4&gt;
+
+&lt;p&gt;While developing and testing &lt;code class=&quot;highlighter-rouge&quot;&gt;race-lib&lt;/code&gt; it became apparent that requests to britishcycling.org.uk is rate limited and a 429 is returned if you exceed 1 request per 4 seconds over about a minute. The throttling of requests in the lib is dumb at the moment, requests are serialized and a 4 second wait between them added. The library allows you to register for notifications about progress so you can notify the user about the progress of fetching rankings.&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;race&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;addEventListener&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'entrantLoaded'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;status&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Entrants&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;loading&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;detail&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;loaded&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/${data.detail.total}`&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;;
+&lt;/span&gt;  &lt;span class=&quot;nx&quot;&gt;displayEntrants&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;detail&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;users&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;race-cli&quot;&gt;&lt;a href=&quot;https://www.npmjs.com/package/race-cli&quot;&gt;race-cli&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;A simple command interface for retrieving data about entrants to British Cycling races. It is a wrapper around &lt;a href=&quot;https://github.com/mrloop/race-lib&quot;&gt;race-lib&lt;/a&gt; which provides a command line prompt with which to search races and list entrants.&lt;/p&gt;
+
+&lt;p&gt;To install and run use the following commands:&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;npm install -g race-cli
+race
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;It allows you to search for events and browse them. Upon selecting a race it displays a table of entrants.&lt;/p&gt;
+
+&lt;asciinema-player font-size=&quot;15&quot; loop=&quot;true&quot; autoplay=&quot;true&quot; src=&quot;/video/race-cli.json&quot;&gt;&lt;/asciinema-player&gt;
+&lt;script src=&quot;/js/asciinema-player.js&quot;&gt;&lt;/script&gt;
+
+&lt;h3 id=&quot;know-the-competition&quot;&gt;&lt;a href=&quot;https://addons.mozilla.org/en-US/firefox/addon/know-the-competition/&quot;&gt;Know the competition&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/mrloop/race-ext&quot;&gt;Source code here&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Next was to write a web extension running &lt;a href=&quot;https://github.com/mrloop/race-lib&quot;&gt;race-lib&lt;/a&gt; and doing some web scraping in browser. I’ve been using &lt;a href=&quot;https://emberjs.com/&quot;&gt;EmberJS&lt;/a&gt; a lot recently. For the web extension a lot of the functionality in &lt;a href=&quot;https://emberjs.com/&quot;&gt;EmberJS&lt;/a&gt; is not needed, and would add unneeded bloat. &lt;a href=&quot;https://glimmerjs.com/&quot;&gt;GlimmerJS&lt;/a&gt; has recently been released and I wanted to try it out for something other than a hello app and this seemed a good excuse.&lt;/p&gt;
+
+&lt;video controls=&quot;&quot; poster=&quot;/video/know-the-competition.png&quot; src=&quot;/video/know-the-competition.m4v&quot;&gt;&lt;/video&gt;
+
+&lt;p&gt;Each &lt;code class=&quot;highlighter-rouge&quot;&gt;Entrants&lt;/code&gt; button is a &lt;a href=&quot;https://glimmerjs.com/&quot;&gt;GlimmerJS&lt;/a&gt; component inserted into the existing web pages DOM, the modal window is another &lt;a href=&quot;https://glimmerjs.com/&quot;&gt;GlimmerJS&lt;/a&gt; component which is triggered to via &lt;code class=&quot;highlighter-rouge&quot;&gt;window.postMessage&lt;/code&gt;. &lt;a href=&quot;https://glimmerjs.com/&quot;&gt;GlimmerJS&lt;/a&gt; handles the presentation layer while &lt;a href=&quot;https://github.com/mrloop/race-lib&quot;&gt;race-lib&lt;/a&gt; fetches and queries the race data. &lt;a href=&quot;https://github.com/mrloop/race-lib&quot;&gt;race-lib&lt;/a&gt; has &lt;code class=&quot;highlighter-rouge&quot;&gt;window.fetch&lt;/code&gt; injected to handle fetching other web pages for scraping while jQuery is injected to handle the html querying of these pages the extract the relevant data.&lt;/p&gt;
+
+&lt;h3 id=&quot;possible-improvements&quot;&gt;Possible improvements&lt;/h3&gt;
+
+&lt;p&gt;Cache British Cycling requests. This could be done at the &lt;a href=&quot;https://github.com/mrloop/race-lib&quot;&gt;race-lib&lt;/a&gt; level, the &lt;a href=&quot;https://github.com/mrloop/race-lib&quot;&gt;race-lib&lt;/a&gt; would probably take an injectable &lt;code class=&quot;highlighter-rouge&quot;&gt;cache-store&lt;/code&gt; that could be changed depending on the environment. Or could look again at the writing a web service which handles the scraping / caching server side.&lt;/p&gt;
+
+&lt;p&gt;Release a web extension for Edge and Chrome. With a unified WebExtension API this should be simple right?&lt;/p&gt;
+</description>
+        <pubDate>Tue, 31 Oct 2017 20:58:46 +0000</pubDate>
+        <link>http://blog.mrloop.com/javascript/glimmerjs/2017/10/31/know-the-competition.html</link>
+        <guid isPermaLink="true">http://blog.mrloop.com/javascript/glimmerjs/2017/10/31/know-the-competition.html</guid>
+        
+        
+        <category>JavaScript</category>
+        
+        <category>GlimmerJS</category>
+        
+      </item>
+    
       <item>
         <title>Pin entry</title>
         <description>&lt;h1 id=&quot;private-keys&quot;&gt;Private Keys&lt;/h1&gt;
 
 &lt;p&gt;I regularly use gpg and ssh keys during the day, from signing git commits, encrypting sensitive messages to email and authenticating with servers. I regularly use gpg via &lt;a href=&quot;https://enigmail.net/&quot;&gt;Enignmail&lt;/a&gt; and the &lt;a href=&quot;https://www.mozilla.org/en-US/thunderbird/&quot;&gt;Thunderbird&lt;/a&gt; GUI and from the command line in &lt;a href=&quot;http://zsh.sourceforge.net/&quot;&gt;zsh&lt;/a&gt;. I was having a couple of issues with the default ubuntu 16.04 setup for managing keys.&lt;/p&gt;
+
 &lt;ol&gt;
   &lt;li&gt;gnome-keyring-agent was not always handling encrypted private keys correctly resulting in some scripts failing to authenticate with an error message &lt;code class=&quot;highlighter-rouge&quot;&gt;too many authentication attempts&lt;/code&gt; even though &lt;code class=&quot;highlighter-rouge&quot;&gt;ssh-add -l&lt;/code&gt; showed the correct keys where available.&lt;/li&gt;
   &lt;li&gt;using &lt;code class=&quot;highlighter-rouge&quot;&gt;ssh&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;ssh-add&lt;/code&gt; from &lt;code class=&quot;highlighter-rouge&quot;&gt;gpg2&lt;/code&gt; from the command line when a password was requested to decrypt a key a GUI dialog would pop up disrupting my focus.&lt;/li&gt;
@@ -125,20 +241,20 @@ First another simple shim is created &lt;code class=&quot;highlighter-rouge&quot
         <pubDate>Thu, 09 Feb 2017 00:00:00 +0000</pubDate>
         <link>http://blog.mrloop.com/workflow/2017/02/09/pin-entry.html</link>
         <guid isPermaLink="true">http://blog.mrloop.com/workflow/2017/02/09/pin-entry.html</guid>
-
+        
         <category>zsh</category>
-
+        
         <category>gpg</category>
-
+        
         <category>ssh</category>
-
+        
         <category>keys</category>
-
-
+        
+        
         <category>workflow</category>
-
+        
       </item>
-
+    
       <item>
         <title>Improving workflow in git</title>
         <description>&lt;h1 id=&quot;workflow&quot;&gt;Workflow&lt;/h1&gt;
@@ -261,12 +377,12 @@ pick vef44hi third functional commit
         <pubDate>Sun, 29 May 2016 00:00:00 +0100</pubDate>
         <link>http://blog.mrloop.com/workflow/2016/05/29/improving-workflow-in-git.html</link>
         <guid isPermaLink="true">http://blog.mrloop.com/workflow/2016/05/29/improving-workflow-in-git.html</guid>
-
-
+        
+        
         <category>workflow</category>
-
+        
       </item>
-
+    
       <item>
         <title>Retrying functions with Ember Concurrency</title>
         <description>&lt;p&gt;I recently wrote about using &lt;a href=&quot;https://www.npmjs.com/package/ember-retry&quot;&gt;ember-retry&lt;/a&gt; in a previous &lt;a href=&quot;/javascript/ember/2016/03/26/retrying-functions-in-ember.html&quot;&gt;blog post&lt;/a&gt; to retry a function in ember with exponential backoff. The next day I watched the &lt;a href=&quot;http://www.youtube.com/watch?v=uVr5HWzecKI&amp;amp;t=1h08m05s&quot;&gt;Ember.js NYC&lt;/a&gt; video about &lt;a href=&quot;http://ember-concurrency.com&quot;&gt;ember-concurrency&lt;/a&gt; specifically &lt;a href=&quot;http://www.youtube.com/watch?v=uVr5HWzecKI&amp;amp;t=1h51m26s&quot;&gt;Loop until operation succeeds, with exponential backoff&lt;/a&gt;&lt;/p&gt;
@@ -319,14 +435,14 @@ pick vef44hi third functional commit
         <pubDate>Tue, 12 Apr 2016 21:07:00 +0100</pubDate>
         <link>http://blog.mrloop.com/javascript/ember/2016/04/12/retrying-functions-with-ember-concurrency.html</link>
         <guid isPermaLink="true">http://blog.mrloop.com/javascript/ember/2016/04/12/retrying-functions-with-ember-concurrency.html</guid>
-
-
+        
+        
         <category>Javascript</category>
-
+        
         <category>Ember</category>
-
+        
       </item>
-
+    
       <item>
         <title>Retrying functions in Ember</title>
         <description>&lt;p&gt;For a recent project &lt;a href=&quot;https://questionr.com&quot;&gt;questionr.com&lt;/a&gt; I needed to handle the deployment of a WebSocket server, the server would go down for a couple of seconds during the deploy and the client would lose it’s connection. To handle the reconnection I wrote a simple ember addon, &lt;a href=&quot;https://www.npmjs.com/package/ember-retry&quot;&gt;ember-retry&lt;/a&gt; which is used to retry the WebSocket server with an exponential backoff.&lt;/p&gt;
@@ -384,14 +500,14 @@ pick vef44hi third functional commit
         <pubDate>Sat, 26 Mar 2016 15:40:00 +0000</pubDate>
         <link>http://blog.mrloop.com/javascript/ember/2016/03/26/retrying-functions-in-ember.html</link>
         <guid isPermaLink="true">http://blog.mrloop.com/javascript/ember/2016/03/26/retrying-functions-in-ember.html</guid>
-
-
+        
+        
         <category>Javascript</category>
-
+        
         <category>Ember</category>
-
+        
       </item>
-
+    
       <item>
         <title>Ember Data and the Meetup API</title>
         <description>&lt;h1 id=&quot;warning-uses-deprecated-ember-data-012&quot;&gt;Warning: Uses Deprecated Ember Data 0.12&lt;/h1&gt;
@@ -703,15 +819,15 @@ could specify that it should only work for &lt;a href=&quot;http://highlandwebgr
         <pubDate>Sun, 07 Apr 2013 15:45:00 +0100</pubDate>
         <link>http://blog.mrloop.com/javascript/ember/ember%20data/2013/04/07/ember-data-and-the-meetup-api.html</link>
         <guid isPermaLink="true">http://blog.mrloop.com/javascript/ember/ember%20data/2013/04/07/ember-data-and-the-meetup-api.html</guid>
-
-
+        
+        
         <category>Javascript</category>
-
+        
         <category>Ember</category>
-
+        
         <category>Ember Data</category>
-
+        
       </item>
-
+    
   </channel>
 </rss>
