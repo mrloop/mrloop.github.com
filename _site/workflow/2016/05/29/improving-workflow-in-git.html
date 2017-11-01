@@ -57,8 +57,6 @@
         
           
         
-          
-        
       </div>
     </nav>
 
@@ -99,29 +97,26 @@
 
 <p>Of course you don’t know ahead of time what files you’ll be touching or what cosmetic changes you’ll make. This is where the <code class="highlighter-rouge">--fixup</code> commit flag is really useful. After the first cosmetic change, take a note of the commit sha <code class="highlighter-rouge">bcde234</code> and then for future cosmetic commits use <code class="highlighter-rouge">git commit --fixup bcde234</code>. Your history will look something like</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>git log --oneline --decorate
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git log <span class="nt">--oneline</span> <span class="nt">--decorate</span>
 defg456 <span class="o">(</span>HEAD, my-feature-branch<span class="o">)</span> fixup! commit cosmetic
 cdef345 commit 3
 bcde234 commit cosmetic
 abcd123 commit 1
 wxyz789 <span class="o">(</span>master<span class="o">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Now your ready to make a pull request, before you do so tidy up your git history by squashing the cosmetic commits together.</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>git rebase --interactive --autosquash abcd123^
-</code></pre>
-</div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git rebase <span class="nt">--interactive</span> <span class="nt">--autosquash</span> abcd123^
+</code></pre></div></div>
 
 <p>Git will open your editor with the <code class="highlighter-rouge">fixup</code> commit in the correct place and marked to fixup.</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code>pick abcd123 commit 1
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pick abcd123 commit 1
 pick bcde234 commit cosmetic
 fixup defg456  fixup! commit cosmetic
 pick cdef345 commit 3
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h3 id="automate">Automate</h3>
 
@@ -129,66 +124,62 @@ pick cdef345 commit 3
 
 <p><code class="highlighter-rouge">.git/hooks/post-checkout</code></p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
-<span class="k">if </span><span class="nb">test</span> <span class="s2">"</span><span class="nv">$3</span><span class="s2">"</span> <span class="o">==</span> <span class="s2">"0"</span>; <span class="k">then </span><span class="nb">exit</span>; <span class="k">fi
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="k">if </span><span class="nb">test</span> <span class="s2">"</span><span class="nv">$3</span><span class="s2">"</span> <span class="o">==</span> <span class="s2">"0"</span><span class="p">;</span> <span class="k">then </span><span class="nb">exit</span><span class="p">;</span> <span class="k">fi
 
-</span><span class="nv">BRANCH_NAME</span><span class="o">=</span><span class="k">$(</span>git symbolic-ref --short -q HEAD<span class="k">)</span>
-<span class="nv">NUM_CHECKOUTS</span><span class="o">=</span><span class="k">$(</span>git reflog | grep -o <span class="k">${</span><span class="nv">BRANCH_NAME</span><span class="k">}</span> | wc -l<span class="k">)</span>
+</span><span class="nv">BRANCH_NAME</span><span class="o">=</span><span class="k">$(</span>git symbolic-ref <span class="nt">--short</span> <span class="nt">-q</span> HEAD<span class="k">)</span>
+<span class="nv">NUM_CHECKOUTS</span><span class="o">=</span><span class="k">$(</span>git reflog | <span class="nb">grep</span> <span class="nt">-o</span> <span class="k">${</span><span class="nv">BRANCH_NAME</span><span class="k">}</span> | wc <span class="nt">-l</span><span class="k">)</span>
 <span class="nv">MESSAGE</span><span class="o">=</span><span class="s2">"To commit cosmetic changes:</span><span class="se">\n</span><span class="s2"> git commit --fixup £1</span><span class="se">\n</span><span class="s2">Before pull request run:</span><span class="se">\n</span><span class="s2"> git rebase --interactive --keep-empty --autosquash £1^</span><span class="se">\n</span><span class="s2">Or if no cosmetic chagnes made:</span><span class="se">\n</span><span class="s2"> git rebase --interactive £1"</span>
 
 <span class="c">#if the refs of the previous and new heads are the same</span>
 <span class="c">#and the number of checkouts equals one a new branch has been created</span>
-<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span> <span class="o">==</span> <span class="s2">"</span><span class="nv">$2</span><span class="s2">"</span>  <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> <span class="k">${</span><span class="nv">NUM_CHECKOUTS</span><span class="k">}</span> -eq 1 <span class="o">]</span>; <span class="k">then
-  </span>git commit --allow-empty -m <span class="s2">"Non functional updates"</span>
-  <span class="nv">COSMETIC_COMMIT</span><span class="o">=</span><span class="k">$(</span>git rev-parse --short --verify HEAD<span class="k">)</span>
-  <span class="nb">echo</span> -e <span class="k">${</span><span class="nv">MESSAGE</span><span class="p">//£1/</span><span class="nv">$COSMETIC_COMMIT</span><span class="k">}</span>
+<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span> <span class="o">==</span> <span class="s2">"</span><span class="nv">$2</span><span class="s2">"</span>  <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> <span class="k">${</span><span class="nv">NUM_CHECKOUTS</span><span class="k">}</span> <span class="nt">-eq</span> 1 <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span>git commit <span class="nt">--allow-empty</span> <span class="nt">-m</span> <span class="s2">"Non functional updates"</span>
+  <span class="nv">COSMETIC_COMMIT</span><span class="o">=</span><span class="k">$(</span>git rev-parse <span class="nt">--short</span> <span class="nt">--verify</span> HEAD<span class="k">)</span>
+  <span class="nb">echo</span> <span class="nt">-e</span> <span class="k">${</span><span class="nv">MESSAGE</span><span class="p">//£1/</span><span class="nv">$COSMETIC_COMMIT</span><span class="k">}</span>
 <span class="k">fi</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Running <code class="highlighter-rouge">git checkout -b MRLOOP_new_feature_branch</code> a creates a new branch with an empty commit and instructions are printed to the console telling you how to add new cosmetic changes commits and how to easily rebase them before a pull request is made.</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>git checkout -b MRLOOP_new_feature_branch
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git checkout <span class="nt">-b</span> MRLOOP_new_feature_branch
 Switched to a new branch <span class="s1">'MRLOOP_new_feature_branch'</span>
 <span class="o">[</span>MRLOOP_new_feature_branch f3b7a19] Non functional updates
 To commit cosmetic changes:
- git commit --fixup f3b7a19
+ git commit <span class="nt">--fixup</span> f3b7a19
 Before pull request run:
- git rebase --keep-empty --interactive --autosquash f3b7a19^
+ git rebase <span class="nt">--keep-empty</span> <span class="nt">--interactive</span> <span class="nt">--autosquash</span> f3b7a19^
 Or <span class="k">if </span>no cosmetic changes made:
- git rebase --interactive f3b7a19^
-</code></pre>
-</div>
+ git rebase <span class="nt">--interactive</span> f3b7a19^
+</code></pre></div></div>
 
 <p>If no cosmetic changes are made then <code class="highlighter-rouge">git rebase --interactive</code> without the <code class="highlighter-rouge">--keep-empty</code> flag and the empty cosmetic change commit is not picked.</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="c">#pick f3b7a19 Non functional updates</span>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#pick f3b7a19 Non functional updates</span>
 pick ob1cd34 first functional commit
 pick gh22f45 second functional commit
 pick vef44hi third functional commit
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h2 id="rewrite-as-git-script">Rewrite as git script</h2>
 
 <p>But a friend didn’t like having an empty commit and suggested rewritting as a git script.</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 
 <span class="nv">DEFAULT_MSG</span><span class="o">=</span><span class="s2">"Non functional updates (auto)"</span>
 <span class="nv">MSG</span><span class="o">=</span><span class="k">${</span><span class="nv">COMMIT_COSMETIC_MSG</span><span class="k">:-</span><span class="nv">$DEFAULT_MSG</span><span class="k">}</span>
-<span class="nv">BRANCH_NAME</span><span class="o">=</span><span class="k">$(</span>git symbolic-ref --short -q HEAD<span class="k">)</span>
-<span class="nv">PREVIOUS_BRANCH_LAST_COMMIT</span><span class="o">=</span><span class="k">$(</span>git reflog --no-abbrev-commit | grep  <span class="s2">"[a-zA-Z0-9]*HEAD@{[0-9]*}: checkout:.*</span><span class="nv">$BRANCH_NAME</span><span class="s2">"</span>  | tail -n 1 | sed -n <span class="s1">'s/\(^[a-zA-Z0-9]*\) .*/\1/p'</span><span class="k">)</span>
-<span class="nv">LAST_COMMIT</span><span class="o">=</span><span class="k">$(</span>git log -n 1 --pretty<span class="o">=</span>format:%H<span class="k">)</span>
-<span class="nv">EXISTING_NON_FNC_COMMIT</span><span class="o">=</span><span class="k">$(</span>git log --grep<span class="o">=</span><span class="s2">"^</span><span class="nv">$MSG</span><span class="s2">"</span> <span class="nv">$PREVIOUS_BRANCH_LAST_COMMIT</span>..HEAD --pretty<span class="o">=</span>format:%H<span class="k">)</span>
+<span class="nv">BRANCH_NAME</span><span class="o">=</span><span class="k">$(</span>git symbolic-ref <span class="nt">--short</span> <span class="nt">-q</span> HEAD<span class="k">)</span>
+<span class="nv">PREVIOUS_BRANCH_LAST_COMMIT</span><span class="o">=</span><span class="k">$(</span>git reflog <span class="nt">--no-abbrev-commit</span> | <span class="nb">grep</span>  <span class="s2">"[a-zA-Z0-9]*HEAD@{[0-9]*}: checkout:.*</span><span class="nv">$BRANCH_NAME</span><span class="s2">"</span>  | tail <span class="nt">-n</span> 1 | sed <span class="nt">-n</span> <span class="s1">'s/\(^[a-zA-Z0-9]*\) .*/\1/p'</span><span class="k">)</span>
+<span class="nv">LAST_COMMIT</span><span class="o">=</span><span class="k">$(</span>git log <span class="nt">-n</span> 1 <span class="nt">--pretty</span><span class="o">=</span>format:%H<span class="k">)</span>
+<span class="nv">EXISTING_NON_FNC_COMMIT</span><span class="o">=</span><span class="k">$(</span>git log <span class="nt">--grep</span><span class="o">=</span><span class="s2">"^</span><span class="nv">$MSG</span><span class="s2">"</span> <span class="nv">$PREVIOUS_BRANCH_LAST_COMMIT</span>..HEAD <span class="nt">--pretty</span><span class="o">=</span>format:%H<span class="k">)</span>
 
-<span class="k">if</span> <span class="o">[</span> <span class="nv">$PREVIOUS_BRANCH_LAST_COMMIT</span> !<span class="o">=</span> <span class="nv">$LAST_COMMIT</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> -n <span class="s2">"</span><span class="nv">$EXISTING_NON_FNC_COMMIT</span><span class="s2">"</span> <span class="o">]</span>; <span class="k">then
-  </span>git commit --fixup <span class="s2">"</span><span class="nv">$EXISTING_NON_FNC_COMMIT</span><span class="s2">"</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$PREVIOUS_BRANCH_LAST_COMMIT</span> <span class="o">!=</span> <span class="nv">$LAST_COMMIT</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> <span class="nt">-n</span> <span class="s2">"</span><span class="nv">$EXISTING_NON_FNC_COMMIT</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span>git commit <span class="nt">--fixup</span> <span class="s2">"</span><span class="nv">$EXISTING_NON_FNC_COMMIT</span><span class="s2">"</span>
 <span class="k">else
-  </span>git commit -m <span class="s2">"</span><span class="nv">$MSG</span><span class="s2">"</span>
+  </span>git commit <span class="nt">-m</span> <span class="s2">"</span><span class="nv">$MSG</span><span class="s2">"</span>
 <span class="k">fi</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Put this script in your <code class="highlighter-rouge">$PATH</code> in a file named <code class="highlighter-rouge">git-cosmetic-commit</code> and running <code class="highlighter-rouge">git cosmetic-commit</code> either creates a new commit for cosmetic changes or creates a fixup commit for the orignal cosmetic commit on the current branch.</p>
 

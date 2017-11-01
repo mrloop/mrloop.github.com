@@ -57,8 +57,6 @@
         
           
         
-          
-        
       </div>
     </nav>
 
@@ -81,17 +79,17 @@
 
 <p>So how do you implement exponential backoff with ember-concurrency?</p>
 
-<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="kr">import</span> <span class="nx">Ember</span> <span class="nx">from</span> <span class="s1">'ember'</span><span class="p">;</span>
-<span class="kr">import</span> <span class="p">{</span> <span class="nx">task</span><span class="p">,</span> <span class="nx">timeout</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">'ember-concurrency'</span><span class="p">;</span>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Ember</span> <span class="k">from</span> <span class="s1">'ember'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">task</span><span class="p">,</span> <span class="nx">timeout</span> <span class="p">}</span> <span class="k">from</span> <span class="s1">'ember-concurrency'</span><span class="p">;</span>
 
-<span class="kr">const</span> <span class="nx">MAX_RETRIES</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
-<span class="kr">const</span> <span class="nx">WS_URL</span> <span class="o">=</span> <span class="s1">'ws://ws.qustionr.com'</span>
+<span class="kd">const</span> <span class="nx">MAX_RETRIES</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">WS_URL</span> <span class="o">=</span> <span class="s1">'ws://ws.qustionr.com'</span>
 
-<span class="kr">export</span> <span class="k">default</span> <span class="nx">Ember</span><span class="p">.</span><span class="nx">Component</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Ember</span><span class="p">.</span><span class="nx">Component</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
 
   <span class="na">init</span><span class="p">:</span> <span class="kd">function</span><span class="p">(){</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">_super</span><span class="p">(...</span><span class="nx">arguments</span><span class="p">);</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'setupWs'</span><span class="p">).</span><span class="nx">perform</span><span class="p">();</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_super</span><span class="p">(...</span><span class="kr">arguments</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'setupWs'</span><span class="p">).</span><span class="nx">perform</span><span class="p">();</span>
   <span class="p">},</span>
 
   <span class="na">setupWs</span><span class="p">:</span> <span class="nx">task</span><span class="p">(</span><span class="kd">function</span> <span class="o">*</span> <span class="p">()</span> <span class="p">{</span>
@@ -108,12 +106,12 @@
   <span class="p">}),</span>
 
   <span class="na">getWs</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="nx">Ember</span><span class="p">.</span><span class="nx">RSVP</span><span class="p">.</span><span class="nx">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span><span class="o">=&gt;</span><span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nx">Ember</span><span class="p">.</span><span class="nx">RSVP</span><span class="p">.</span><span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span><span class="o">=&gt;</span><span class="p">{</span>
       <span class="k">try</span> <span class="p">{</span>
         <span class="kd">let</span> <span class="nx">ws</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WebSocket</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
         <span class="nx">ws</span><span class="p">.</span><span class="nx">onopen</span> <span class="o">=</span> <span class="p">()</span><span class="o">=&gt;</span> <span class="nx">resolve</span><span class="p">(</span><span class="nx">ws</span><span class="p">);</span>
         <span class="nx">ws</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="o">=&gt;</span> <span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
-        <span class="nx">ws</span><span class="p">.</span><span class="nx">onclose</span> <span class="o">=</span> <span class="p">()</span><span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'setupWs'</span><span class="p">).</span><span class="nx">perform</span><span class="p">();</span>
+        <span class="nx">ws</span><span class="p">.</span><span class="nx">onclose</span> <span class="o">=</span> <span class="p">()</span><span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'setupWs'</span><span class="p">).</span><span class="nx">perform</span><span class="p">();</span>
       <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">reject</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
       <span class="p">}</span>
@@ -121,8 +119,7 @@
   <span class="p">}</span>
 
 <span class="p">});</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
   </article>
 

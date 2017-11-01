@@ -713,11 +713,11 @@ pre {
 
 /* Generic.Inserted & Diff Inserted */
 pre {
-  overflow-x: auto;
-  border-radius: 4px; }
+  overflow-x: auto; }
 
 .highlight {
-  color: #eeeeee; }
+  color: #eeeeee;
+  border-radius: 4px; }
 
 video {
   width: 100%;

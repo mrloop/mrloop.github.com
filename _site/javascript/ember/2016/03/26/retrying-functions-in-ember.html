@@ -57,8 +57,6 @@
         
           
         
-          
-        
       </div>
     </nav>
 
@@ -79,13 +77,13 @@
   <article class="post-content">
     <p>For a recent project <a href="https://questionr.com">questionr.com</a> I needed to handle the deployment of a WebSocket server, the server would go down for a couple of seconds during the deploy and the client would lose it’s connection. To handle the reconnection I wrote a simple ember addon, <a href="https://www.npmjs.com/package/ember-retry">ember-retry</a> which is used to retry the WebSocket server with an exponential backoff.</p>
 
-<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="kr">import</span> <span class="nx">Ember</span> <span class="nx">from</span> <span class="s1">'ember'</span><span class="p">;</span>
-<span class="kr">import</span> <span class="nx">retry</span> <span class="nx">from</span> <span class="s1">'ember-retry/retry'</span><span class="p">;</span>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Ember</span> <span class="k">from</span> <span class="s1">'ember'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">retry</span> <span class="k">from</span> <span class="s1">'ember-retry/retry'</span><span class="p">;</span>
 
-<span class="kr">export</span> <span class="k">default</span> <span class="nx">Ember</span><span class="p">.</span><span class="nx">Component</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Ember</span><span class="p">.</span><span class="nx">Component</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
 
   <span class="na">init</span><span class="p">:</span> <span class="kd">function</span><span class="p">(){</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">_super</span><span class="p">(...</span><span class="nx">arguments</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_super</span><span class="p">(...</span><span class="kr">arguments</span><span class="p">);</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">setupWs</span><span class="p">();</span>
   <span class="p">},</span>
 
@@ -101,19 +99,18 @@
   <span class="p">}</span>
 
 <span class="p">});</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Where a library already uses promises, retry can be invoked without passing a function with resolve and reject arguments and instead returning the promise e.g.</p>
 
-<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="kr">import</span> <span class="nx">Ember</span> <span class="nx">from</span> <span class="s1">'ember'</span><span class="p">;</span>
-<span class="kr">import</span> <span class="nx">retry</span> <span class="nx">from</span> <span class="s1">'ember-retry/retry'</span><span class="p">;</span>
-<span class="kr">import</span> <span class="nx">ws</span> <span class="nx">from</span> <span class="s1">'monocules.ws-client'</span><span class="p">;</span>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Ember</span> <span class="k">from</span> <span class="s1">'ember'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">retry</span> <span class="k">from</span> <span class="s1">'ember-retry/retry'</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">ws</span> <span class="k">from</span> <span class="s1">'monocules.ws-client'</span><span class="p">;</span>
 
-<span class="kr">export</span> <span class="k">default</span> <span class="nx">Ember</span><span class="p">.</span><span class="nx">Component</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Ember</span><span class="p">.</span><span class="nx">Component</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
 
   <span class="na">init</span><span class="p">:</span> <span class="kd">function</span><span class="p">(){</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">_super</span><span class="p">(...</span><span class="nx">arguments</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_super</span><span class="p">(...</span><span class="kr">arguments</span><span class="p">);</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">setupWs</span><span class="p">();</span>
   <span class="p">},</span>
 
@@ -126,8 +123,7 @@
     <span class="p">});</span>
   <span class="p">}</span>
 <span class="p">});</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
   </article>
 

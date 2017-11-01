@@ -57,8 +57,6 @@
         
           
         
-          
-        
       </div>
     </nav>
 
@@ -96,29 +94,29 @@
 
 <p>My <code class="highlighter-rouge">.zshrc</code> contains the following:</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="c"># gpg</span>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># gpg</span>
 <span class="c">#</span>
 <span class="nv">GPG_TTY</span><span class="o">=</span><span class="k">$(</span>tty<span class="k">)</span>
 <span class="nb">export </span>GPG_TTY
 <span class="c"># gpg as ssh-agent</span>
 <span class="nb">unset </span>SSH_AGENT_PID
-<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="k">${</span><span class="nv">gnupg_SSH_AUTH_SOCK_by</span><span class="k">:-</span><span class="nv">0</span><span class="k">}</span><span class="s2">"</span> -ne <span class="nv">$$</span> <span class="o">]</span>; <span class="k">then
-  </span><span class="nb">export </span><span class="nv">SSH_AUTH_SOCK</span><span class="o">=</span><span class="s2">"</span><span class="k">$(</span>gpgconf --list-dirs agent-ssh-socket<span class="k">)</span><span class="s2">"</span>
+<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="k">${</span><span class="nv">gnupg_SSH_AUTH_SOCK_by</span><span class="k">:-</span><span class="nv">0</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-ne</span> <span class="nv">$$</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">export </span><span class="nv">SSH_AUTH_SOCK</span><span class="o">=</span><span class="s2">"</span><span class="k">$(</span>gpgconf <span class="nt">--list-dirs</span> agent-ssh-socket<span class="k">)</span><span class="s2">"</span>
 <span class="k">fi</span>
 
 <span class="c"># let pinentry know which console to display in for ssh-agent</span>
 <span class="c"># https://www.gnupg.org/documentation/manuals/gnupg/Common-Problems.html</span>
 update-start-up-tty<span class="o">(){</span>
-  <span class="nb">echo </span>UPDATESTARTUPTTY | gpg-connect-agent &gt; /dev/null
+  <span class="nb">echo </span>UPDATESTARTUPTTY | gpg-connect-agent <span class="o">&gt;</span> /dev/null
 <span class="o">}</span>
 
 <span class="c"># let gpg-agent know which pinentry program to use</span>
 update-pinentry-app<span class="o">(){</span>
-  <span class="nb">echo</span> <span class="s2">"term"</span> &gt; /tmp/pinentry-app
+  <span class="nb">echo</span> <span class="s2">"term"</span> <span class="o">&gt;</span> /tmp/pinentry-app
 <span class="o">}</span>
 
 <span class="c"># add zsh hook to exec above function before every command execution</span>
-autoload -U add-zsh-hook
+autoload <span class="nt">-U</span> add-zsh-hook
 zsh-preexec<span class="o">(){</span>
   update-start-up-tty
   update-pinentry-app
@@ -127,15 +125,14 @@ add-zsh-hook preexec zsh-preexec
 
 <span class="c"># similar to `ssh-add -D` but works with gpg-agent</span>
 ssh-delete<span class="o">(){</span>
-  grep -o ^[A-Z0-9]<span class="k">*</span> ~/.gnupg/sshcontrol | xargs -I% rm ~/.gnupg/private-keys-v1.d/%.key
-  <span class="nb">echo</span> <span class="s1">''</span> &gt; ~/.gnupg/sshcontrol
+  <span class="nb">grep</span> <span class="nt">-o</span> ^[A-Z0-9]<span class="k">*</span> ~/.gnupg/sshcontrol | xargs <span class="nt">-I</span>% rm ~/.gnupg/private-keys-v1.d/%.key
+  <span class="nb">echo</span> <span class="s1">''</span> <span class="o">&gt;</span> ~/.gnupg/sshcontrol
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Next a simple shim for pinentry is needed, when invoked it selects either a terminal pinentry program or a GUI pinentry program based on contents of <code class="highlighter-rouge">/tmp/pinentry-app</code></p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 <span class="c">#</span>
 <span class="c"># http://askubuntu.com/questions/858347/disable-gnome-from-asking-passphrase-in-gui-when-using-ssh-and-gpg-from-terminal#858947</span>
 <span class="c">#</span>
@@ -144,35 +141,31 @@ ssh-delete<span class="o">(){</span>
 <span class="nv">PINENTRY_X11</span><span class="o">=</span>/usr/bin/pinentry-x11
 
 <span class="c"># if /tmp/pinentry-app is "x11" then use gui</span>
-<span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>cat /tmp/pinentry-app<span class="k">)</span> <span class="o">=</span> <span class="s2">"x11"</span> <span class="o">]</span>; <span class="k">then
+<span class="k">if</span> <span class="o">[</span> <span class="k">$(</span><span class="nb">cat</span> /tmp/pinentry-app<span class="k">)</span> <span class="o">=</span> <span class="s2">"x11"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
   </span><span class="nb">exec</span> <span class="s2">"</span><span class="nv">$PINENTRY_X11</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>
 <span class="k">else
   </span><span class="nb">exec</span> <span class="s2">"</span><span class="nv">$PINENTRY_TERMINAL</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>
 <span class="k">fi</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>This needs to be linked to pinentry so it is used as our default pinentry program.</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code>ln -s ~/bin/pinentry /usr/local/bin/pinentry -f
-</code></pre>
-</div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ln <span class="nt">-s</span> ~/bin/pinentry /usr/local/bin/pinentry <span class="nt">-f</span>
+</code></pre></div></div>
 
 <p>The <code class="highlighter-rouge">gpg-agent</code> needs ssh enabled and then stopped, it’ll automatically restart when needed.</p>
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="nb">echo</span> <span class="s1">'enable-ssh-support'</span> &gt;&gt; ~/.gnupg/gpg-agent.conf
-gpgconf --kill gpg-agent
-</code></pre>
-</div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s1">'enable-ssh-support'</span> <span class="o">&gt;&gt;</span> ~/.gnupg/gpg-agent.conf
+gpgconf <span class="nt">--kill</span> gpg-agent
+</code></pre></div></div>
 
 <p>Next the GUI applications using GnuPG need configured, in my case Thunderbird Enigmail.
 First another simple shim is created <code class="highlighter-rouge">~/bin/gpg2-thunderbird</code>, this time for <code class="highlighter-rouge">gpg2</code>, which tells <code class="highlighter-rouge">gpg-agent</code> to use the GUI pinentry.</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
 
-<span class="nb">echo</span> <span class="s2">"x11"</span> &gt; /tmp/pinentry-app
+<span class="nb">echo</span> <span class="s2">"x11"</span> <span class="o">&gt;</span> /tmp/pinentry-app
 <span class="nb">exec</span> <span class="s2">"/usr/local/bin/gpg2"</span> <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Then <code class="highlighter-rouge">Thunderbird &gt; Enigmail &gt; Preferences &gt; Basic &gt; Files and Directories &gt; Override with</code> is updated with the location of the <code class="highlighter-rouge">gpg2</code> shim.</p>
 

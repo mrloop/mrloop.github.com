@@ -57,8 +57,6 @@
         
           
         
-          
-        
       </div>
     </nav>
 
@@ -108,7 +106,7 @@ letting you write a sync object for specific models in your API so you can work 
 
 <p>I define a function <em>meetupSync</em> which returns a generic sync object.</p>
 
-<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">//https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/MeetupAdapter.js</span>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/MeetupAdapter.js</span>
 <span class="nx">App</span><span class="p">.</span><span class="nx">meetupSync</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">type</span><span class="p">){</span>
   <span class="nx">sync</span> <span class="o">=</span> <span class="p">{</span>
     <span class="na">munge</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">json</span><span class="p">){</span><span class="nx">json</span><span class="p">},</span>
@@ -133,9 +131,9 @@ letting you write a sync object for specific models in your API so you can work 
       <span class="p">})</span>
     <span class="p">},</span>
     <span class="na">findHasMany</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">record</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">processor</span><span class="p">){</span>
-      <span class="nx">relationship_model</span> <span class="o">=</span> <span class="nx">record</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">typeForRelationship</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">relationship</span><span class="p">)</span>
+      <span class="nx">relationship_model</span> <span class="o">=</span> <span class="nx">record</span><span class="p">.</span><span class="kd">constructor</span><span class="p">.</span><span class="nx">typeForRelationship</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">relationship</span><span class="p">)</span>
       <span class="nx">q</span> <span class="o">=</span> <span class="p">{};</span>
-      <span class="nx">q</span><span class="p">[</span><span class="nx">record</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">type</span><span class="o">+</span><span class="s2">"_id"</span><span class="p">]</span> <span class="o">=</span> <span class="nx">record</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+      <span class="nx">q</span><span class="p">[</span><span class="nx">record</span><span class="p">.</span><span class="kd">constructor</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">type</span><span class="o">+</span><span class="s2">"_id"</span><span class="p">]</span> <span class="o">=</span> <span class="nx">record</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
       <span class="nx">relationship_model</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">Ember</span><span class="p">.</span><span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span><span class="nx">q</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">findHasManyQueryOptions</span><span class="p">),</span> <span class="nx">processor</span><span class="p">)</span>
     <span class="p">},</span>
     <span class="na">_query</span><span class="p">:</span> <span class="nx">_</span><span class="p">.</span><span class="nx">rateLimit</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">processResult</span><span class="p">){</span>
@@ -147,8 +145,7 @@ letting you write a sync object for specific models in your API so you can work 
   <span class="nx">sync_copy</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="nx">type</span><span class="p">;</span>
   <span class="k">return</span> <span class="nx">sync_copy</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>This is a generalized sync object for the meetup API that I can customise for each model
 as needed. I define 3 functions for finding records from the API.</p>
@@ -162,9 +159,8 @@ as needed. I define 3 functions for finding records from the API.</p>
 <p>In my implementation <em>find</em> and <em>findHasMany</em> both use <em>query</em> to find records.
 The <em>query</em> function takes 2 arguments, ‘query’ e.g.</p>
 
-<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="p">{</span> <span class="nl">status</span><span class="p">:</span> <span class="s1">'upcoming'</span> <span class="p">}</span>
-</code></pre>
-</div>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nl">status</span><span class="p">:</span> <span class="s1">'upcoming'</span> <span class="p">}</span>
+</code></pre></div></div>
 <p>and a a function ‘process’ with we use to load the JSON from our request into the Data Store after we have done our own
 processing with our <em>munge</em> function. The query function uses our private
 function <em>_query</em> which is <a href="https://gist.github.com/mattheworiordan/1084831">rate limited</a> to stop meetup API restricting access
@@ -174,7 +170,7 @@ for too frequent API calls.</p>
 
 <h3 id="event-models">Event Models</h3>
 
-<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">//https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js</span>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js</span>
 <span class="kd">var</span> <span class="nx">attr</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">;</span>
 
 <span class="nx">App</span><span class="p">.</span><span class="nx">Event</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
@@ -186,7 +182,7 @@ for too frequent API calls.</p>
 
   <span class="na">attending_rsvps</span><span class="p">:</span> <span class="kd">function</span><span class="p">(){</span>
     <span class="k">return</span> <span class="nx">Ember</span><span class="p">.</span><span class="nx">ArrayController</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
-      <span class="na">content</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'rsvps'</span><span class="p">).</span><span class="nx">filterProperty</span><span class="p">(</span><span class="s1">'response'</span><span class="p">,</span><span class="s1">'yes'</span><span class="p">)</span>
+      <span class="na">content</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'rsvps'</span><span class="p">).</span><span class="nx">filterProperty</span><span class="p">(</span><span class="s1">'response'</span><span class="p">,</span><span class="s1">'yes'</span><span class="p">)</span>
     <span class="p">});</span>
   <span class="p">}.</span><span class="nx">property</span><span class="p">(</span><span class="s1">'rsvps.@each'</span><span class="p">),</span>
 
@@ -198,14 +194,12 @@ for too frequent API calls.</p>
   <span class="na">how_to_find_us</span><span class="p">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">'string'</span><span class="p">),</span>
   <span class="na">venue</span><span class="p">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">'object'</span><span class="p">)</span>
 <span class="p">})</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>The Event model is defined then its sync object is initialised.</p>
 
-<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">App</span><span class="p">.</span><span class="nx">Event</span><span class="p">.</span><span class="nx">sync</span> <span class="o">=</span> <span class="nx">App</span><span class="p">.</span><span class="nx">meetupSync</span><span class="p">(</span><span class="s1">'event'</span><span class="p">);</span>
-</code></pre>
-</div>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">App</span><span class="p">.</span><span class="nx">Event</span><span class="p">.</span><span class="nx">sync</span> <span class="o">=</span> <span class="nx">App</span><span class="p">.</span><span class="nx">meetupSync</span><span class="p">(</span><span class="s1">'event'</span><span class="p">);</span>
+</code></pre></div></div>
 
 <p>The meetup API return an events data including the events group as a nested object but without
 all the information we want to load a App.Group object into the data store.
@@ -213,59 +207,57 @@ all the information we want to load a App.Group object into the data store.
 
 <p><em>events.json http://www.meetup.com/meetup_api/console/?path=/2/events</em></p>
 
-<div class="language-json highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"upcoming"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"visibility"</span><span class="p">:</span><span class="w"> </span><span class="s2">"public"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"maybe_rsvp_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"venue"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">6200762</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">-4.2325</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"repinned"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Eden Court"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"address_1"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Bishops Road"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">57.472176</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gb"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Inverness"</span><span class="w">
+    </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"upcoming"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"visibility"</span><span class="p">:</span><span class="w"> </span><span class="s2">"public"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"maybe_rsvp_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">6200762</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">-4.2325</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"repinned"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Eden Court"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"address_1"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Bishops Road"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">57.472176</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gb"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Inverness"</span><span class="w">
       </span><span class="p">},</span><span class="w">
-      </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ghnjqyrgbvb"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"utc_offset"</span><span class="p">:</span><span class="w"> </span><span class="mi">3600000</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">1366135200000</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"waitlist_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"updated"</span><span class="p">:</span><span class="w"> </span><span class="mi">1331810527000</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"yes_rsvp_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"created"</span><span class="p">:</span><span class="w"> </span><span class="mi">1296155663000</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"event_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://www.meetup.com/Highland-Web-Group/events/111106332/"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;p&gt;An informal and friendly setting for chat about all types of web-related stuff. All welcome.&lt;/p&gt;"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"how_to_find_us"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Meet in the Tulloch Room. Ask at reception if you're unsure how to find it."</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The Highland Web Group Monthly Meetup"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"headcount"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"group"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1744559</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"group_lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">57.47999954223633</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Highland Web Group"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"group_lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">-4.230000019073486</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"join_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"urlname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Highland-Web-Group"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"who"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Members"</span><span class="w">
+      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ghnjqyrgbvb"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"utc_offset"</span><span class="p">:</span><span class="w"> </span><span class="mi">3600000</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">1366135200000</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"waitlist_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"updated"</span><span class="p">:</span><span class="w"> </span><span class="mi">1331810527000</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"yes_rsvp_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"created"</span><span class="p">:</span><span class="w"> </span><span class="mi">1296155663000</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"event_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://www.meetup.com/Highland-Web-Group/events/111106332/"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;p&gt;An informal and friendly setting for chat about all types of web-related stuff. All welcome.&lt;/p&gt;"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"how_to_find_us"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Meet in the Tulloch Room. Ask at reception if you're unsure how to find it."</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The Highland Web Group Monthly Meetup"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"headcount"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"group"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1744559</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"group_lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">57.47999954223633</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Highland Web Group"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"group_lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">-4.230000019073486</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"join_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"urlname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Highland-Web-Group"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"who"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Members"</span><span class="w">
       </span><span class="p">}</span><span class="w">
   </span><span class="p">}]</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 <p>A custom <em>munge</em> function is defined for handling results returned from the
 API.</p>
 
-<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">//event.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js</span>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//event.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/event.js</span>
 <span class="nx">App</span><span class="p">.</span><span class="nx">Event</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">munge</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">json</span><span class="p">){</span>
   <span class="k">if</span><span class="p">(</span><span class="nx">json</span><span class="p">.</span><span class="nx">group</span> <span class="o">&amp;&amp;</span> <span class="nx">json</span><span class="p">.</span><span class="nx">group</span><span class="p">.</span><span class="nx">id</span><span class="p">){</span>
     <span class="nx">json</span><span class="p">.</span><span class="nx">group_id</span> <span class="o">=</span> <span class="nx">json</span><span class="p">.</span><span class="nx">group</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
     <span class="nx">json</span><span class="p">.</span><span class="nx">group</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
   <span class="p">}</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>The group id is extracted from the nested object and set the group_id key on the
 top level event object so ember data properly handles the belongsTo
@@ -278,62 +270,61 @@ ember data doesn’t try and materialise a App.Group from this record.</p>
 
 <p><em>rsvps.json http://www.meetup.com/meetup_api/console/?path=/2/rsvp</em></p>
 
-<div class="language-json highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"response"</span><span class="p">:</span><span class="w"> </span><span class="s2">"yes"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"member"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Blair Millen"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"member_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">8357569</span><span class="w">
+    </span><span class="s2">"response"</span><span class="p">:</span><span class="w"> </span><span class="s2">"yes"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"member"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Blair Millen"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"member_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">8357569</span><span class="w">
       </span><span class="p">},</span><span class="w">
-      </span><span class="nt">"member_photo"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"photo_link"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://photos2.meetupstatic.com/photos/member/3/b/e/f/member_5175343.jpeg"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"highres_link"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://photos2.meetupstatic.com/photos/member/3/b/e/f/highres_5175343.jpeg"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"thumb_link"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://photos2.meetupstatic.com/photos/member/3/b/e/f/thumb_5175343.jpeg"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"photo_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">5175343</span><span class="w">
+      </span><span class="s2">"member_photo"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"photo_link"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://photos2.meetupstatic.com/photos/member/3/b/e/f/member_5175343.jpeg"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"highres_link"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://photos2.meetupstatic.com/photos/member/3/b/e/f/highres_5175343.jpeg"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"thumb_link"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://photos2.meetupstatic.com/photos/member/3/b/e/f/thumb_5175343.jpeg"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"photo_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">5175343</span><span class="w">
       </span><span class="p">},</span><span class="w">
-      </span><span class="nt">"created"</span><span class="p">:</span><span class="w"> </span><span class="mi">1364297767000</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"event"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ghnjqyrgbvb"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">1366135200000</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"event_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://www.meetup.com/Highland-Web-Group/events/111106332/"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The Highland Web Group Monthly Meetup"</span><span class="w">
+      </span><span class="s2">"created"</span><span class="p">:</span><span class="w"> </span><span class="mi">1364297767000</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ghnjqyrgbvb"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">1366135200000</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"event_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://www.meetup.com/Highland-Web-Group/events/111106332/"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The Highland Web Group Monthly Meetup"</span><span class="w">
       </span><span class="p">},</span><span class="w">
-      </span><span class="nt">"mtime"</span><span class="p">:</span><span class="w"> </span><span class="mi">1364297767000</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"guests"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"rsvp_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">741139992</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"venue"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">6200762</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">-4.2325</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"repinned"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Eden Court"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"address_1"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Bishops Road"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">57.472176</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gb"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Inverness"</span><span class="w">
+      </span><span class="s2">"mtime"</span><span class="p">:</span><span class="w"> </span><span class="mi">1364297767000</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"guests"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"rsvp_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">741139992</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">6200762</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">-4.2325</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"repinned"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Eden Court"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"address_1"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Bishops Road"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">57.472176</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gb"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Inverness"</span><span class="w">
       </span><span class="p">},</span><span class="w">
-      </span><span class="nt">"group"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1744559</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"group_lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">57.47999954223633</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"group_lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">-4.230000019073486</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"join_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="p">,</span><span class="w">
-        </span><span class="nt">"urlname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Highland-Web-Group"</span><span class="w">
+      </span><span class="s2">"group"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1744559</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"group_lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">57.47999954223633</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"group_lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">-4.230000019073486</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"join_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"urlname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Highland-Web-Group"</span><span class="w">
       </span><span class="p">}</span><span class="w">
   </span><span class="p">}]</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p>The Rsvp model looks like this.</p>
 
-<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">//rsvp.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js</span>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//rsvp.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js</span>
 <span class="kd">var</span> <span class="nx">attr</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">attr</span><span class="p">;</span>
 
 <span class="nx">App</span><span class="p">.</span><span class="nx">Rsvp</span> <span class="o">=</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
 
   <span class="na">event</span><span class="p">:</span> <span class="nx">DS</span><span class="p">.</span><span class="nx">belongsTo</span><span class="p">(</span><span class="s1">'App.Event'</span><span class="p">),</span>
   <span class="na">memberLink</span><span class="p">:</span> <span class="kd">function</span><span class="p">(){</span>
-    <span class="k">return</span> <span class="s2">"http://www.meetup.com/members/"</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'member.member_id'</span><span class="p">);</span>
+    <span class="k">return</span> <span class="s2">"http://www.meetup.com/members/"</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'member.member_id'</span><span class="p">);</span>
   <span class="p">}.</span><span class="nx">property</span><span class="p">(</span><span class="s1">'member'</span><span class="p">),</span>
   <span class="na">comments</span><span class="p">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">'string'</span><span class="p">),</span>
   <span class="na">created</span><span class="p">:</span> <span class="nx">attr</span><span class="p">(</span><span class="s1">'date'</span><span class="p">),</span>
@@ -344,12 +335,11 @@ ember data doesn’t try and materialise a App.Group from this record.</p>
 <span class="p">})</span>
 
 <span class="nx">App</span><span class="p">.</span><span class="nx">Rsvp</span><span class="p">.</span><span class="nx">sync</span> <span class="o">=</span> <span class="nx">App</span><span class="p">.</span><span class="nx">meetupSync</span><span class="p">(</span><span class="s1">'rsvp'</span><span class="p">);</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>The Rsvp models munge function does a little more work.</p>
 
-<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">//rsvp.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js</span>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//rsvp.js https://github.com/HighlandWebGroup/highlandwebgroup.github.com/blob/master/app/lib/models/rsvp.js</span>
 <span class="nx">App</span><span class="p">.</span><span class="nx">Rsvp</span><span class="p">.</span><span class="nx">sync</span><span class="p">.</span><span class="nx">munge</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">json</span><span class="p">){</span>
   <span class="k">if</span><span class="p">(</span><span class="nx">json</span><span class="p">.</span><span class="nx">rsvp_id</span> <span class="o">&amp;&amp;</span> <span class="nx">json</span><span class="p">.</span><span class="nx">rsvp_id</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">){</span>
     <span class="c1">//ember-data wont accept -1 id</span>
@@ -364,8 +354,7 @@ ember data doesn’t try and materialise a App.Group from this record.</p>
 
   <span class="k">return</span> <span class="nx">json</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>The rsvp data returned by the API uses ‘rsvp_id’ instead of ‘id’ for the object id and it also sets the rsvp_id to -1 if it a repeating event that hasn’t been rsvp’d by anybody but the host. ember-data doesn’t handle -1 id so we set this to something else or if an ordinary id is returned we change the key from rsvp_id to id.</p>
 
