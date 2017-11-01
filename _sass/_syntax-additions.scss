@@ -1,5 +1,10 @@
+$highlight-border-radius: 4px;
+
 pre {
   overflow-x: auto;
-  border-radius: 4px;
 }
-.highlight { color: #eeeeee }
+
+.highlight {
+  color: #eeeeee;
+  border-radius: $highlight-border-radius;
+}
