@@ -4,7 +4,7 @@ email: info@mrloop.com
 description: > # this means to ignore newlines until "baseurl:"
   News and Stories from mrloop, avid cyclist, coder, maker of questionr.com.
 baseurl: "" # the subpath of your site, e.g. /blog/
-url: "http://blog.mrloop.com" # the base hostname & protocol for your site
+url: "https://blog.mrloop.com" # the base hostname & protocol for your site
 twitter_username: mrloop
 github_username:  mrloop
 

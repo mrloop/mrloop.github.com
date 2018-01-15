@@ -4,12 +4,11 @@
     <title>mrloop</title>
     <description>News and Stories from mrloop, avid cyclist, coder, maker of questionr.com.
 </description>
-    <link>http://blog.mrloop.com/</link>
-    <atom:link href="http://blog.mrloop.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <link>https://blog.mrloop.com/</link>
+    <atom:link href="https://blog.mrloop.com/feed.xml" rel="self" type="application/rss+xml"/>
     <pubDate>Wed, 01 Nov 2017 16:53:10 +0000</pubDate>
     <lastBuildDate>Wed, 01 Nov 2017 16:53:10 +0000</lastBuildDate>
-    <generator>Jekyll v3.6.0</generator>
-    
+
       <item>
         <title>Know the competition</title>
         <description>&lt;p&gt;I do quite a bit of cycling, and have been thinking about racing in some competitive events again. A lot of the races are organized by British Cycling and for many of the competitive events lists of entrants are published. You can view entrants and their national and regional rankings based on points they’ve won for good placings in previous races.
@@ -111,16 +110,16 @@ race
 &lt;p&gt;To increase the possible audience for the web extension could release a web extension for Edge and Chrome. With a unified &lt;a href=&quot;https://developer.mozilla.org/en-US/Add-ons/WebExtensions&quot;&gt;WebExtension&lt;/a&gt; API this should be simple right?&lt;/p&gt;
 </description>
         <pubDate>Wed, 01 Nov 2017 00:00:00 +0000</pubDate>
-        <link>http://blog.mrloop.com/javascript/glimmerjs/2017/11/01/know-the-competition.html</link>
-        <guid isPermaLink="true">http://blog.mrloop.com/javascript/glimmerjs/2017/11/01/know-the-competition.html</guid>
-        
-        
+        <link>https://blog.mrloop.com/javascript/glimmerjs/2017/11/01/know-the-competition.html</link>
+        <guid isPermaLink="true">https://blog.mrloop.com/javascript/glimmerjs/2017/11/01/know-the-competition.html</guid>
+
+
         <category>JavaScript</category>
-        
+
         <category>GlimmerJS</category>
-        
+
       </item>
-    
+
       <item>
         <title>Pin entry</title>
         <description>&lt;h1 id=&quot;private-keys&quot;&gt;Private Keys&lt;/h1&gt;
@@ -230,22 +229,22 @@ First another simple shim is created &lt;code class=&quot;highlighter-rouge&quot
 
 </description>
         <pubDate>Thu, 09 Feb 2017 00:00:00 +0000</pubDate>
-        <link>http://blog.mrloop.com/workflow/2017/02/09/pin-entry.html</link>
-        <guid isPermaLink="true">http://blog.mrloop.com/workflow/2017/02/09/pin-entry.html</guid>
-        
+        <link>https://blog.mrloop.com/workflow/2017/02/09/pin-entry.html</link>
+        <guid isPermaLink="true">https://blog.mrloop.com/workflow/2017/02/09/pin-entry.html</guid>
+
         <category>zsh</category>
-        
+
         <category>gpg</category>
-        
+
         <category>ssh</category>
-        
+
         <category>keys</category>
-        
-        
+
+
         <category>workflow</category>
-        
+
       </item>
-    
+
       <item>
         <title>Improving workflow in git</title>
         <description>&lt;h1 id=&quot;workflow&quot;&gt;Workflow&lt;/h1&gt;
@@ -359,14 +358,14 @@ pick vef44hi third functional commit
 &lt;p&gt;&lt;a href=&quot;https://github.com/mrloop/git_scripts&quot;&gt;mrloop/git_scripts&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Sun, 29 May 2016 00:00:00 +0100</pubDate>
-        <link>http://blog.mrloop.com/workflow/2016/05/29/improving-workflow-in-git.html</link>
-        <guid isPermaLink="true">http://blog.mrloop.com/workflow/2016/05/29/improving-workflow-in-git.html</guid>
-        
-        
+        <link>https://blog.mrloop.com/workflow/2016/05/29/improving-workflow-in-git.html</link>
+        <guid isPermaLink="true">https://blog.mrloop.com/workflow/2016/05/29/improving-workflow-in-git.html</guid>
+
+
         <category>workflow</category>
-        
+
       </item>
-    
+
       <item>
         <title>Retrying functions with Ember Concurrency</title>
         <description>&lt;p&gt;I recently wrote about using &lt;a href=&quot;https://www.npmjs.com/package/ember-retry&quot;&gt;ember-retry&lt;/a&gt; in a previous &lt;a href=&quot;/javascript/ember/2016/03/26/retrying-functions-in-ember.html&quot;&gt;blog post&lt;/a&gt; to retry a function in ember with exponential backoff. The next day I watched the &lt;a href=&quot;http://www.youtube.com/watch?v=uVr5HWzecKI&amp;amp;t=1h08m05s&quot;&gt;Ember.js NYC&lt;/a&gt; video about &lt;a href=&quot;http://ember-concurrency.com&quot;&gt;ember-concurrency&lt;/a&gt; specifically &lt;a href=&quot;http://www.youtube.com/watch?v=uVr5HWzecKI&amp;amp;t=1h51m26s&quot;&gt;Loop until operation succeeds, with exponential backoff&lt;/a&gt;&lt;/p&gt;
@@ -416,16 +415,16 @@ pick vef44hi third functional commit
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Tue, 12 Apr 2016 21:07:00 +0100</pubDate>
-        <link>http://blog.mrloop.com/javascript/ember/2016/04/12/retrying-functions-with-ember-concurrency.html</link>
-        <guid isPermaLink="true">http://blog.mrloop.com/javascript/ember/2016/04/12/retrying-functions-with-ember-concurrency.html</guid>
-        
-        
+        <link>https://blog.mrloop.com/javascript/ember/2016/04/12/retrying-functions-with-ember-concurrency.html</link>
+        <guid isPermaLink="true">https://blog.mrloop.com/javascript/ember/2016/04/12/retrying-functions-with-ember-concurrency.html</guid>
+
+
         <category>Javascript</category>
-        
+
         <category>Ember</category>
-        
+
       </item>
-    
+
       <item>
         <title>Retrying functions in Ember</title>
         <description>&lt;p&gt;For a recent project &lt;a href=&quot;https://questionr.com&quot;&gt;questionr.com&lt;/a&gt; I needed to handle the deployment of a WebSocket server, the server would go down for a couple of seconds during the deploy and the client would lose it’s connection. To handle the reconnection I wrote a simple ember addon, &lt;a href=&quot;https://www.npmjs.com/package/ember-retry&quot;&gt;ember-retry&lt;/a&gt; which is used to retry the WebSocket server with an exponential backoff.&lt;/p&gt;
@@ -479,16 +478,16 @@ pick vef44hi third functional commit
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 </description>
         <pubDate>Sat, 26 Mar 2016 15:40:00 +0000</pubDate>
-        <link>http://blog.mrloop.com/javascript/ember/2016/03/26/retrying-functions-in-ember.html</link>
-        <guid isPermaLink="true">http://blog.mrloop.com/javascript/ember/2016/03/26/retrying-functions-in-ember.html</guid>
-        
-        
+        <link>https://blog.mrloop.com/javascript/ember/2016/03/26/retrying-functions-in-ember.html</link>
+        <guid isPermaLink="true">https://blog.mrloop.com/javascript/ember/2016/03/26/retrying-functions-in-ember.html</guid>
+
+
         <category>Javascript</category>
-        
+
         <category>Ember</category>
-        
+
       </item>
-    
+
       <item>
         <title>Ember Data and the Meetup API</title>
         <description>&lt;h1 id=&quot;warning-uses-deprecated-ember-data-012&quot;&gt;Warning: Uses Deprecated Ember Data 0.12&lt;/h1&gt;
@@ -789,17 +788,17 @@ could specify that it should only work for &lt;a href=&quot;http://highlandwebgr
 
 </description>
         <pubDate>Sun, 07 Apr 2013 15:45:00 +0100</pubDate>
-        <link>http://blog.mrloop.com/javascript/ember/ember%20data/2013/04/07/ember-data-and-the-meetup-api.html</link>
-        <guid isPermaLink="true">http://blog.mrloop.com/javascript/ember/ember%20data/2013/04/07/ember-data-and-the-meetup-api.html</guid>
-        
-        
+        <link>https://blog.mrloop.com/javascript/ember/ember%20data/2013/04/07/ember-data-and-the-meetup-api.html</link>
+        <guid isPermaLink="true">https://blog.mrloop.com/javascript/ember/ember%20data/2013/04/07/ember-data-and-the-meetup-api.html</guid>
+
+
         <category>Javascript</category>
-        
+
         <category>Ember</category>
-        
+
         <category>Ember Data</category>
-        
+
       </item>
-    
+
   </channel>
 </rss>
