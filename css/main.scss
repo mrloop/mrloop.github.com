@@ -11,20 +11,35 @@ $base-line-height: 1.5;
 
 $spacing-unit:     30px;
 
-$text-color:       #111;
-$background-color: #fdfdfd;
-$brand-color:      #2a7ae2;
-
-$grey-color:       #828282;
-$grey-color-light: lighten($grey-color, 40%);
-$grey-color-dark:  darken($grey-color, 25%);
-
 // Width of the content area
 $content-width:    800px;
 
 $on-palm:          600px;
 $on-laptop:        800px;
 
+:root {
+  --text-color:       #111;
+  --background-color: #fdfdfd;
+  --brand-color:      #2a7ae2;
+  --brand-color-dark: #1756a9;
+
+  --grey-color:       #828282;
+  --grey-color-light: #e8e8e8;
+  --grey-color-dark:  #424242;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-color:       #dfdfdf;
+    --background-color: #111111;
+    --brand-color:      #2a7ae2;
+    --brand-color-dark: #1756a9;
+
+    --grey-color:       #828282;
+    --grey-color-light: #424242;
+    --grey-color-dark:  #e8e8e8;
+  }
+}
 // Using media queries with like this:
 // @include media-query($on-palm) {
 //     .wrapper {
@@ -48,3 +63,9 @@ $on-laptop:        800px;
   "syntax-additions",
   "video"
 ;
+
+#discourse-comments {
+  border-radius: 5px;
+  border: 2px solid white;
+  background: white;
+}
