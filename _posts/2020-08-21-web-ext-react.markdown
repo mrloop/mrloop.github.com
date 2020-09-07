@@ -5,7 +5,7 @@ comments: true
 categories: [JavaScript, ReactJS]
 ---
 
-I wanted to write a [WebExtension](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions) for Firefox and Chrome in [ReactJS](https://reactjs.org), with little configuration in the simplest possible manner, using [create-react-app](https://reactjs.org/docs/create-a-new-react-app.html#create-react-app) and [web-ext](https://github.com/mozilla/web-ext), I couldn't find any guides or instructions online so this is the setup I used. [create-react-app](https://reactjs.org/docs/create-a-new-react-app.html#create-react-app) is the recommend tool for creating new single page applications in React.
+I wanted to write a [WebExtension](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions) for Firefox and Chrome in [ReactJS](https://reactjs.org), with little configuration in the simplest possible manner, using [create-react-app](https://reactjs.org/docs/create-a-new-react-app.html#create-react-app) and [web-ext](https://github.com/mozilla/web-ext), I couldn't find any guides or instructions online so this is the setup I used. [create-react-app](https://reactjs.org/docs/create-a-new-react-app.html#create-react-app) is the recommended tool for creating new single page applications in React.
 
 Lets create an app, first make sure you've got [Node.js](https://nodejs.org/en/) installed then:
 
