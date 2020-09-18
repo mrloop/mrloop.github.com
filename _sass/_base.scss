@@ -130,8 +130,6 @@ code {
     font-size: 15px;
     border: 1px solid var(--grey-color-light);
     border-radius: 3px;
-    //background-color: var(--grey-color);
-    color: var(--text-color);
 }
 
 code {
@@ -202,4 +200,23 @@ pre {
             fill: var(--grey-color);
         }
     }
+}
+
+/**
+ * Minimal untility tailwindcss
+ */
+.hidden {
+  display: none;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.m-8 {
+  margin: 2em;
 }
