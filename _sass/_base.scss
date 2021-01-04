@@ -54,6 +54,10 @@ figure > img {
     display: block;
 }
 
+figure > svg {
+    width: 100%;
+}
+
 figcaption {
     font-size: $small-font-size;
 }
