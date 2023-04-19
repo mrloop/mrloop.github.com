@@ -1,0 +1,137 @@
+---
+layout: post
+title: "Quick full-stack app deployment using AWS and Ember.js"
+categories: [JavaScript, Ember, Typescript, AWS, SST]
+---
+
+I've been working on a small side project, more on that later, and wanted a straight forward way to deploy a serverless full-stack app. I'm using [Ember.js](https://emberjs.com/) as the front-end framework and the back-end is [AWS](https://aws.amazon.com/), Amazon Web Services, [Lambda](https://aws.amazon.com/lambda/) and other AWS services. This post describes the minimal setup to deploy a full-stack app with [Ember.js](https://emberjs.com/) and a [Lambda](https://aws.amazon.com/lambda/) API endpoint.
+
+We're going to create a simple hello world [Ember.js](https://emberjs.com/) app that is deployed to AWS with Serverless Stack, [SST](https://sst.dev/), and uses a `hello` API endpoint. There are lots of good docs on SST at [https://docs.sst.dev](https://docs.sst.dev). We'll use the ['Get Started'](https://docs.sst.dev/start/standalone) instructions to create the SST project and then add our [Ember.js](https://emberjs.com/) app to it.
+
+You'll need an AWS account and [AWS credentials configured locally](https://docs.sst.dev/advanced/iam-credentials#loading-from-a-file). We'll use [pnpm](https://pnpm.io/) but you could also use [npm](https://docs.npmjs.com/cli) or [yarn](https://yarnpkg.com/getting-started). The finished app is available [on github](https://github.com/mrloop/ember-sst-example).
+
+## Create a new app
+
+```sh
+pnpm create sst ember-sst-example
+```
+
+### Start your [local dev environment](https://docs.sst.dev/live-lambda-development).
+
+```sh
+pnpm install && pnpm sst dev
+```
+
+This will print the URL of your API endpoint to the console similar to `https://random-string.execute-api.us-east-1.amazonaws.com`.
+
+### Add an Ember.js app.
+
+```sh
+cd packages
+pnpx ember-cli new web --lang en --skip-npm --skip-git
+pnpm install
+```
+
+We'll remove the `ember-cli-sri` package from the ember app as it's not working with the SST cloudfront deployment.
+In future ember releases, ember-cli > 5, it's likely the following step won't be needed. If it fails don't worry.
+
+```sh
+cd web && pnpm remove ember-cli-sri
+```
+
+### Add the web app to your stacks and link the API to it.
+
+_stacks/MyStack.tsc_
+
+```diff
+-import { StackContext, Api } from "sst/constructs";
++import { StaticSite, StackContext, Api } from "sst/constructs";
+
+export function API({ stack }: StackContext) {
+  const api = new Api(stack, "api", {
+    routes: {
+      "GET /": "packages/functions/src/lambda.handler",
+    },
+  });
+
++ const web = new StaticSite(stack, "web", {
++   path: "packages/web",
++   buildOutput: "dist",
++   buildCommand: "pnpm build",
++   environment: {
++     EMBER_APP_API_URL: api.url,
++   }
++ });
++
+  stack.addOutputs({
+    ApiEndpoint: api.url,
++   Website: web.url,
+  });
+}
+```
+
+### Config the Ember.js app to use the API.
+
+_packages/web/config/environment.js_
+```diff
+const ENV = {
++  apiUrl: process.env.EMBER_APP_API_URL,
+```
+
+_packages/web/ember-cli-build.js_
+```diff
+const app = new EmberApp(defaults, {
+- // Add options here
++ storeConfigInMeta: false,
+});
+```
+
+### Start the ember app locally and bind SST to it.
+
+```sh
+cd packages/web
+pnpm sst bind ember s
+```
+
+### Remove the Ember.js welcome page and fetch the welcome from the hello endpoint.
+
+_packages/web/app/routes/application.js_
+```js
+import Route from '@ember/routing/route';
+import config from 'web/config/environment';
+
+export default class ApplicationRoute extends Route {
+  async model() {
+    let response = await fetch(config.apiUrl);
+    return response.json();
+  }
+}
+```
+
+_packages/web/app/templates/application.hbs_
+```handlebars
+{% raw %}{{page-title "Web"}}
+
+{{this.model.body}}
+
+{{outlet}}{% endraw %}
+```
+
+You should see the API hello message rendered by the Ember.js app.
+
+### Deploy to production.
+
+```sh
+pnpm sst deploy --stage prod
+```
+
+Congratulations you just deployed your app! The Website URL will be printed to the console.
+
+### Clean up
+
+To cleanup your AWS resources you can remove the development environment and the production environment.
+
+```sh
+pnpm sst remove
+pnpm sst remove --stage prod
+```
