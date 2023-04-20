@@ -1,4 +1,5 @@
 @font-face {
+  font-display: block;
   font-family: 'Pincoyablack';
   src: url(/fonts/pincoyablack.woff) format('woff');
   font-weight: normal;
@@ -6,6 +7,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: 'Raleway';
   font-style: normal;
   font-weight: normal;
