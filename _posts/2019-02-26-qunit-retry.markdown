@@ -3,6 +3,7 @@ layout: post
 title: "qunit-retry"
 comments: true
 categories: [JavaScript]
+excerpt: "Over the weekend I built a simple utility for QUnit, qunit-retry. QUnit is a JavaScript Unit Testing framework which I use extensively daily not just"
 ---
 
 Over the weekend I built a simple utility for QUnit, [qunit-retry](https://github.com/mrloop/QUnit-retry). [QUnit](https://qunitjs.com/) is a JavaScript Unit Testing framework which I use extensively daily not just for unit testing but acceptance and integration testing in [Ember.js](https://emberjs.com/). The majority of the acceptance tests are written against [mirage](http://www.ember-cli-mirage.com/), a client side server that mocks out the real API. For a few critical paths through the app, the project has acceptance tests against its real API and interacts with third party services such as payment processors using a test account.

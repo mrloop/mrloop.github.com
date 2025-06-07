@@ -3,6 +3,7 @@ layout: post
 title: "Know the competition"
 comments: true
 categories: [JavaScript, GlimmerJS]
+excerpt: "I do quite a bit of cycling, and have been thinking about racing in some competitive events again. A lot of the races are organized by British"
 ---
 
 I do quite a bit of cycling, and have been thinking about racing in some competitive events again. A lot of the races are organized by British Cycling and for many of the competitive events lists of entrants are published. You can view entrants and their national and regional rankings based on points they've won for good placings in previous races.

@@ -2,6 +2,7 @@
 layout: post
 title: "Exploring LLMs: A Blind Trial for Code Completions"
 categories: [Neovim, LLM, AI]
+excerpt: "This article presents findings from a four-month blind trial of LLM code completions in a professional development environment. By tracking over"
 ---
 
 > **Abstract:** This article presents findings from a four-month blind trial of LLM code completions in a professional development environment. By tracking over 94,000 code suggestions across three leading AI assistants, I found that GitHub Copilot delivers the highest quality suggestions (3.4% acceptance rate) while Supermaven provides the greatest volume of useful completions. Codeium performed significantly worse (0.5% acceptance rate) and was discontinued after seven days. This data-driven approach reveals meaningful differences in LLM performance for practical coding assistance.

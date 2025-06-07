@@ -4,6 +4,7 @@ title: "Retrying functions with Ember Concurrency"
 date: 2016-04-12 21:07
 comments: true
 categories: [Javascript, Ember]
+excerpt: "I recently wrote about using ember-retry in a previous blog post to retry a function in ember with exponential backoff. The next day I watched the"
 ---
 
 I recently wrote about using [ember-retry](https://www.npmjs.com/package/ember-retry) in a previous [blog post]({% post_url 2016-03-26-retrying-functions-in-ember %}) to retry a function in ember with exponential backoff. The next day I watched the [Ember.js NYC](http://www.youtube.com/watch?v=uVr5HWzecKI&t=1h08m05s) video about [ember-concurrency](http://ember-concurrency.com) specifically [Loop until operation succeeds, with exponential backoff](http://www.youtube.com/watch?v=uVr5HWzecKI&t=1h51m26s)

@@ -3,6 +3,7 @@ layout: post
 title: "Improving Ember.js serve and testing performance"
 comments: true
 categories: [JavaScript, Ember, Typescript]
+excerpt: "I use the cli command ember serve or the abbreviated form ember s everyday, to build and serve locally ember apps for development. I noticed that ember"
 ---
 
 I use the cli command `ember serve` or the abbreviated form `ember s` everyday, to build and serve locally ember apps for development. I noticed that `ember s --path dist` and `ember t --path dist` were taking a long time to start. The `--path` flag lets you reuse an existing build at the given path.

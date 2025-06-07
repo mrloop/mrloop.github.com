@@ -4,6 +4,7 @@ title: "Pin entry"
 comments: true
 categories: [workflow]
 tags: [zsh, gpg, ssh, keys]
+excerpt: "Private Keys. I regularly use gpg and ssh keys during the day, from signing git commits, encrypting sensitive messages to email and authenticating"
 ---
 
 # Private Keys #

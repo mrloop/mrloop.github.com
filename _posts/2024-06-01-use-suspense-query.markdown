@@ -3,6 +3,7 @@ layout: post
 title: "useSuspenseQuery"
 comments: true
 categories: [JavaScript, React, tanstack]
+excerpt: "I was interested in how nested React Suspense and TanStack useSuspenseQuery worked together. The small app below is a visualization of various"
 ---
 
 <script type="module" crossorigin src="/js/react-suspense.js"></script>

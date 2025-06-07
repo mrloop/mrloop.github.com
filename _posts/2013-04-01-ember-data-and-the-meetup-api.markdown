@@ -4,6 +4,7 @@ title: "Ember Data and the Meetup API"
 date: 2013-04-07 15:45
 comments: true
 categories: [Javascript, Ember, Ember Data]
+excerpt: "Warning: Uses Deprecated Ember Data 0.12. I'm a member of the highland web group and they were looking for somebody to create a website for the"
 ---
 
 # Warning: Uses Deprecated Ember Data 0.12

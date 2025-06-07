@@ -2,6 +2,7 @@
 layout: post
 title: "Quick full-stack app deployment using AWS and Ember.js"
 categories: [JavaScript, Ember, Typescript, AWS, SST]
+excerpt: "I've been working on a small side project, more on that later, and wanted a straight forward way to deploy a serverless full-stack app. I'm using"
 ---
 
 I've been working on a small side project, more on that later, and wanted a straight forward way to deploy a serverless full-stack app. I'm using [Ember.js](https://emberjs.com/) as the front-end framework and the back-end is [AWS](https://aws.amazon.com/), Amazon Web Services, [Lambda](https://aws.amazon.com/lambda/) and other AWS services. This post describes the minimal setup to deploy a full-stack app with [Ember.js](https://emberjs.com/) and a [Lambda](https://aws.amazon.com/lambda/) API endpoint.

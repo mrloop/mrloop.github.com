@@ -2,6 +2,7 @@
 layout: post
 title: Scoped CSS in Ruby
 categories: [ruby, rails, css, viewcomponent]
+excerpt: "The Component-Based CSS Challenge in Rails. After years of working with JavaScript frameworks like Ember and React, I recently returned to Ruby on"
 ---
 
 ## The Component-Based CSS Challenge in Rails

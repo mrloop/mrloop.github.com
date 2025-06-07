@@ -3,6 +3,7 @@ layout: post
 title: "ember-metrics adapter for Simple Analytics"
 comments: true
 categories: [Javascript, Ember]
+excerpt: "This is a short post announcing ember-metrics-simple-analytics, an ember-metrics adapter for Simple Analytics. Simple Analytics is a"
 ---
 
 This is a short post announcing [ember-metrics-simple-analytics](https://github.com/mrloop/ember-metrics-simple-analytics), an [ember-metrics](https://github.com/adopted-ember-addons/ember-metrics) adapter for [Simple Analytics](https://www.simpleanalytics.com/). [Simple Analytics](https://www.simpleanalytics.com/) is a privacy-orientated analytics provider that I’ve been using since they started for all my websites and apps.

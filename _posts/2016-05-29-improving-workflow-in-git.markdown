@@ -3,6 +3,7 @@ layout: post
 title: "Improving workflow in git"
 comments: true
 categories: [workflow]
+excerpt: "Workflow. The team I work in uses git day to day to manage ticketsolves codebase. In general the workflow is: Create new feature branch. Do work"
 ---
 
 # Workflow #

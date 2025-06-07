@@ -4,6 +4,7 @@ title: "Retrying functions in Ember"
 date: 2016-03-26 15:40
 comments: true
 categories: [Javascript, Ember]
+excerpt: "For a recent project questionr.com I needed to handle the deployment of a WebSocket server, the server would go down for a couple of seconds during the"
 ---
 
 For a recent project [questionr.com](https://questionr.com) I needed to handle the deployment of a WebSocket server, the server would go down for a couple of seconds during the deploy and the client would lose it's connection. To handle the reconnection I wrote a simple ember addon, [ember-retry](https://www.npmjs.com/package/ember-retry) which is used to retry the WebSocket server with an exponential backoff.
