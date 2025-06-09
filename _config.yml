@@ -11,6 +11,12 @@ twitter_username: mrloop
 github_username:  mrloop
 lang: en-GB
 
+social:
+  name: mrloop
+  links:
+    - https://twitter.com/mrloop
+    - https://github.com/mrloop
+
 # Build settings
 markdown: kramdown
 kramdown:
